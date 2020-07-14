@@ -1,0 +1,19 @@
+name: Build artifacts
+
+on:
+  push:
+    tags: v*
+
+jobs:
+  engine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Prepare environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install libsdl2-dev emscripten
+      - name: Build & run tests
+        run: |
+          cmake .
+          make retrolab_wasm
