@@ -15,6 +15,6 @@ jobs:
         sudo apt-get install libsdl2-dev
     - name: Build & run tests
       run: |
-        cmake
+        cmake .
+        make retrolab_test
         make test
-
