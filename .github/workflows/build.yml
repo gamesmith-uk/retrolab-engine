@@ -28,7 +28,8 @@ jobs:
           cd ../build
           cmake ..
           make wasm-release
-          zip retrolab-wasm.zip retrolab.wasm retrolab.js
+          make retrolab.def
+          zip retrolab-wasm.zip retrolab.wasm retrolab.js retrolab.def
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
