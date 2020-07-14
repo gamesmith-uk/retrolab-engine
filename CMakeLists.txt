@@ -93,3 +93,12 @@ add_executable(retrolab_test tests.c ${SOURCES})
 target_compile_options(retrolab_test PRIVATE -Wall -Wextra -DHEADLESS)
 target_link_libraries(retrolab_test ${SDL2_LIBRARIES})
 add_test(test retrolab_test)
+
+add_custom_target(test-video
+        DEPENDS retrolab
+        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/retrolab -s ${CMAKE_CURRENT_SOURCE_DIR}/asm/demo.s)
+
+add_custom_target(test-leaks
+        DEPENDS retrolab_test
+        COMMAND valgrind --leak-check=full --show-leak-kinds=all ${CMAKE_CURRENT_BINARY_DIR}/retrolab_test
+        USES_TERMINAL)
