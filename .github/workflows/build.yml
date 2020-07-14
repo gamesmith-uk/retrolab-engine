@@ -2,7 +2,7 @@ name: Build artifacts
 
 on:
   push:
-    #tags: v*
+    #tags: 'v*'
     branch: 0-build
 
 jobs:
@@ -21,15 +21,15 @@ jobs:
           cmake ..
           make wasm-release
       - name: Create Release
-          uses: actions/create-release@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            tag_name: ${{ github.ref }}
-            release_name: Release ${{ github.ref }}
-            body: |
-              Changes in this Release
-              - First Change
-              - Second Change
-            draft: true   # TODO
-            prerelease: false
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release
+            - First Change
+            - Second Change
+          draft: true   # TODO
+          prerelease: false
