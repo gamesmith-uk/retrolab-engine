@@ -1,0 +1,305 @@
+# 
+# interrupts
+#
+
+- comments:
+  - I/O and interrupt numbers
+- name: INT_CPU
+  addr: 0x0
+  comments: 
+    - when a CPU error happens (compare XT with XT_CPU_...)
+- name: INT_KEYBOARD
+  addr: 0x1
+  comments:
+    - when a key is pressed (XT contains the ASCII code of the key pressed)
+    - 'special keys:'
+    - '  [F0]: insert'
+    - '  [F1]: home'
+    - '  [F2]: end'
+    - '  [F3]: page up'
+    - '  [F4]: page down'
+    - '  [F5]: right'
+    - '  [F6]: left'
+    - '  [F7]: up'
+    - '  [F8]: down'
+- name: INT_VIDEO
+  addr: 0x3
+  comments:
+    - no interrupts are implemented yet
+- name: INT_TIMER
+  addr: 0x4
+  comments:
+    - when a timer reaches zero (compare XT with XT_TIMER_...)
+- name: INT_SOUND
+  addr: 0x5
+  comments:
+    - not implemented yet
+- name: INT_FPU
+  addr: 0x6
+  comments:
+    - not implemented yet
+- name: INT_JOYSTICK
+  addr: 0x7
+  comments:
+    - when a joystick button is pressed (see JOYSTICK_STATE for XT register)
+
+#
+# XT register
+#
+
+- comments:
+  - Interrupt register (XT)
+- name: XT_TIMER_0
+  addr: 0x0
+  comments:
+    - Frame timer 0 has reached zero
+- name: XT_TIMER_1
+  addr: 0x1
+  comments:
+    - Frame timer 1 has reached zero
+- name: XT_TIMER_2
+  addr: 0x2
+  comments:
+    - Frame timer 2 has reached zero
+- name: XT_TIMER_3
+  addr: 0x3
+  comments:
+    - Frame timer 3 has reached zero
+
+# TODO:
+#  define INT_VID_START_FRAME 0x04
+#  define INT_VID_END_FRAME   0x05
+#  define INT_VID_START_LINE  0x06
+#  define INT_VID_END_LINE    0x07
+
+- name: XT_CPU_IRET
+  addr: 0x0
+  comments:
+    - IRET outside of an interrupt
+- name: XT_CPU_DIVZERO
+  addr: 0x1
+  comment:
+    - Division by zero
+- name: XT_CPU_INVALID_OP
+  addr: 0x2
+  comment:
+    - Invalid instruction
+
+# TODO
+#define INT_USER0           0xF3
+#define INT_USER1           0xF4
+
+#
+# Device requests
+#
+
+- name: DEV_MEM_MGR
+  addr: 0x2
+  comments:
+    - 'used to copy a block of memory:'
+    - '  [register X]: initial origin position'
+    - '  [register Y]: initial destination position'
+    - '  [paramter]:   memory block size'
+
+#
+# colors
+#
+
+- comments:
+  - Colors
+- name: COLOR_BLACK
+  addr: 0x0
+- name: COLOR_PURPLE
+  addr: 0x1
+- name: COLOR_RED
+  addr: 0x2
+- name: COLOR_ORANGE
+  addr: 0x3
+- name: COLOR_YELLOW
+  addr: 0x4
+- name: COLOR_LIME
+  addr: 0x5
+- name: COLOR_GREEN
+  addr: 0x6
+- name: COLOR_TURQUOISE
+  addr: 0x7
+- name: COLOR_DARK_BLUE
+  addr: 0x8
+- name: COLOR_BLUE
+  addr: 0x9
+- name: COLOR_LIGHT_BLUE
+  addr: 0xa
+- name: COLOR_CYAN
+  addr: 0xb
+- name: COLOR_WHITE
+  addr: 0xc
+- name: COLOR_LIGHT_GRAY
+  addr: 0xd
+- name: COLOR_GRAY
+  addr: 0xe
+- name: COLOR_DARK_GRAY
+  addr: 0xf
+
+# 
+# other definitions
+#
+
+- comments:
+  - Initial stack
+- name: STACK_BOTTOM
+  size: 1
+  comments:
+    - Initial position for stack (SP)
+
+################# MEMORY MAP ###################
+
+#
+# joystick
+#
+
+- comments:
+  - Joystick
+- name: JOYSTICK_STATE
+  size: 1
+  comments:
+    - contains the current state of the joystick
+    - '[bit 0]: up'
+    - '[bit 1]: down'
+    - '[bit 2]: left'
+    - '[bit 3]: right'
+    - '[bit 4]: Z'
+    - '[bit 5]: X'
+    - '[bit 6]: A'
+    - '[bit 7]: S'
+
+#
+# timer
+#
+
+- comments:
+  - Timer
+- name: TIMER_FRAME_0
+  size: 2
+  comments:
+    - count down timer - decrements at the end of each frame
+- name: TIMER_FRAME_1
+  size: 2
+- name: TIMER_FRAME_2
+  size: 2
+- name: TIMER_FRAME_3
+  size: 2
+
+#
+# CPU
+#
+
+- comments:
+  - CPU
+- name: CPU_VERSION_MAJOR
+  size: 1
+  comments:
+    - always 0x1 for this cpu type
+- name: CPU_VERSION_MINOR
+  size: 1
+  comments:
+    - increments with each new release
+- name: CPU_RANDOM
+  size: 2
+  comments:
+    - returns a random number at each read
+
+#
+# Video
+#
+
+- comments:
+  - Video
+- name: VIDEO_MODE
+  size: 1
+  comments:
+    - video config
+    - '[bit 0]: 0 = sprite/tiles, 1 = pixel data'
+    - '[bit 1]: interrupt on start of frame'
+    - '[bit 2]: interrupt of end of frame'
+    - '[bit 3]: interrupt of start of line'
+    - '[bit 4]: interrupt on end of file'
+- name: VIDEO_BORDER
+  size: 1
+  comments:
+    - border color
+- name: VIDEO_TXT
+  size: 1200
+  comments: 
+    - text (40 * 30 characters)
+- name: VIDEO_TXT_COLOR
+  size: 30
+  comments:
+    - text line color - 30 lines
+    - each byte = foreground / background color
+- name: VIDEO_CURSOR_INFO
+  size: 1
+  comments:
+    - Cursor info
+    - '[bits 0..3]: cursor color'
+    - '[4]: cursor visible'
+    - '[5]: cursor style (0 = whole, 1 = half) (not implemented)'
+    - '[6]: blinking (not implemented)'
+- name: VIDEO_CURSOR_POS
+  size: 2
+  comments:
+    - cursor position (continuous)
+- name: VIDEO_VBLANK
+  size: 1
+  comments:
+    - 'raster: is beam in VBLANK?'
+- name: VIDEO_BEAM_X
+  size: 1
+  comments:
+    - beam position X (line from 0 - 119, porch from 120-239)
+- name: VIDEO_BEAM_Y
+  size: 1
+  comments:
+    - beam position Y (frame from 0 - 135, ...)
+- name: VIDEO_TXT_DISLOC_X
+  size: 1
+  comments:
+    - text dislocation (horizontal)
+- name: VIDEO_TXT_DISLOC_Y
+  size: 1
+  comments:
+    - text dislocation (vertical)
+- name: VIDEO_TILE_MAP1   # TODO - create a large map
+  size: 290
+  comments:
+    - 290 bytes (0x122)
+    - '[000-11F]: (first 7 bits: tile index -- last bit: horizontal flip)'
+    - '[    120]: vertical dislocation'
+    - '[    121]: horizontal dislocation'
+    - '[122-130]: unused'
+- name: VIDEO_TILE_MAP2
+  size: 290
+- name: VIDEO_SPRITE_MAP
+  size: 256
+  comments:
+    - 32 sprites on screen * 8 bytes = 256 bytes (0x100)
+    - '[   00]: sprite index'
+    - '[   01]: graphical representation: (visible, flip horizontal, vertical, double size)'
+    - '[02-03]: position on screen'
+    - '[04-07]: four first collisions (0xFF - no collision)'
+- name: VIDEO_TILE_DATA
+  size: 1280
+  comments:
+    - '128 tiles * 10 bytes per tile = 1280 bytes (0x500)'
+    - '[00-01]: tile palette (max 4 colors)'
+    - '[02-0A]: tile data (each byte - 1 line)'
+- name: VIDEO_SPRITE_DATA
+  size: 0x1000
+  comments:
+    - 64 sprites * 128 bytes per sprite = 8192 bytes (0x2000)
+    - (size 16*16, 2 pixels per byte)
+- name: VIDEO_PALETTE
+  size: 48
+  comments:
+    - palette (3 bytes per color)
+
+# TODO - add VIDEO_PIXEL_DATA

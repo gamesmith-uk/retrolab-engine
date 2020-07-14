@@ -1,0 +1,106 @@
+Little endnian
+Everything takes one clock
+
+Operations:
+  Type        Name  Opcode Operands Signed/floating(+1)
+  -----------------------------------------------------
+  Special     nop    0x00     0
+              dbg    0x01     0
+  Data        mov    0x02     2
+  Logic       or     0x10     2
+              and    0x11     2
+              xor    0x12     2
+              shl    0x13     2
+              shr    0x14     2
+              not    0x15     1
+  Arithmetic  add    0x20     2        %
+              sub    0x22     2        %
+              mul    0x24     2        %
+              div    0x26     2        %
+              mod    0x28     2         
+  Skip        ifne   0x30     2         
+              ifeq   0x31     2         
+              ifgt   0x32     2        %$
+              iflt   0x35     2        %$
+              ifge   0x38     2        %$
+              ifle   0x3B     2        %$
+  Stack       pushb  0x50     1
+              pushw  0x51     1
+              popb   0x52     1
+              popw   0x53     1
+              pusha  0x54     0     ; pushes A, B, C, D, E, F, I, J, K, X, Y, FP, OV
+              popa   0x55     0
+  Jumps       jmp    0x60     1
+              jsr    0x61     1
+              ret    0x62     0
+              jmp*   0x63     1     Only v16, doesn't add the additional indicator byte
+  Interrupts  dev    0x70     2     ; talk to external device
+              ivec   0x71     2     ; set address in interrupt vector
+              int    0x72     1     ; call interrupt
+              iret   0x73     0     ; return from interrupt
+              wait   0x74     0     ; pause CPU until a interrupt happens
+              ienab  0x75     1     ; enable/disable interrupts
+
+Operations endining in...
+    => integer
+  % => floating (also signed)
+  $ => signed
+
+  TODO: 
+    (not?) = xor R, 0xffff
+    (ifb, ifc from dcpu?) - performs next instruction only if (b&a)!=0
+    (adx, sbx from dcpu?) - sets b to b+a+EX, sets EX to 0x0001 if there is an overflow, 0x0 otherwise
+
+Operators:
+
+00 - 3F 00xxxxxx positive literal value (0 to 63)      |
+40 - 7F 01xxxxxx negative literal value (-64 to -1)    |
+80 - 89 10111101 *reserved for future use              | --> cannot be used as destination
+     8A 10111000 next v8                               |
+     8B 10111001 next v16                              |
+     8C 10111011 [next v8]
+     8D 10111011 ^[next v8]
+     8E 10111100 [next v16]
+     8F 10111100 ^[next v16]
+90 - 9F 1100rrrr register:  A, B, C, D, E, F, I, J, K, X, Y, XT, SP, FP, PC, OV
+A0 - AF 1101rrrr [register]
+B0 - BF 1101rrrr ^[register]
+C0 - CF 1110rrrr [register + next v8]
+D0 - DF 1110rrrr ^[register + next v8]
+E0 - EF 1111rrrr [register + next v16]
+F0 - FF 1111rrrr ^[register + next v16]
+
+Devices:
+
+01 - Keyboard
+02 - Memory manager
+  - Requests:
+    - 00 = memmove (X = origin, Y = dest, K = length)
+03 - Video
+  - Interrupts:
+    - 30 = start of frame
+    - 31 = end of frame
+    - 32 = start of line
+    - 33 = end of line
+04 - Timer
+  - Interrupts
+    - 40 = timer0 is zero
+    - 41 = timer1 is zero
+    - 42 = timer2 is zero
+    - 43 = timer3 is zero
+05 - Sound
+06 - FPU
+...
+FD - IRET while not in an interrupt
+FE - Division by zero
+FF - Invalid instruction
+
+Interrupts:
+  - the device number multiplied by 0x10
+    - so each device have 10 interrupts
+
+Memory map: (see mmap.h for updated information)
+
+CPU cycles per frame:
+
+ - ((120 * 2) * 135) * 2 = 64800 * 60 = 3888000 = 4 Mhz
