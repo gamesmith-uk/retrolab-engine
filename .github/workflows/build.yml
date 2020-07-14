@@ -13,14 +13,20 @@ jobs:
       - name: Prepare environment
         run: |
           sudo apt-get update
-          sudo apt-get install libsdl2-dev emscripten
+          sudo apt-get install libsdl2-dev
+      - name: Install emscripten
+        run: |
+          git clone https://github.com/emscripten-core/emsdk.git
+          cd emsdk
+          ./emsdk install latest
+          ./emsdk activate latest
+          source ./emsdk_env.sh
       - name: Build WASM
         id: build_wasm
         run: |
           mkdir build
           cd build
           cmake ..
-          emcc
           make wasm-release
           ls
           zip retrolab-wasm.zip retrolab.wasm retrolab.js
