@@ -20,12 +20,13 @@ jobs:
           cd emsdk
           ./emsdk install latest
           ./emsdk activate latest
-          source ./emsdk_env.sh
       - name: Build WASM
         id: build_wasm
         run: |
-          mkdir build
-          cd build
+          cd emsdk
+          source ./emsdk_env.sh
+          mkdir ../build
+          cd ../build
           cmake ..
           make wasm-release
           zip retrolab-wasm.zip retrolab.wasm retrolab.js
