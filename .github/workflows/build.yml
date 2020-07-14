@@ -3,7 +3,7 @@ name: Build artifacts
 on:
   push:
     #tags: 'v*'
-    branch: 0-build
+    branch: 0-build  # TODO
 
 jobs:
   engine:
@@ -14,22 +14,35 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libsdl2-dev emscripten
-      - name: Build & run tests
+      - name: Build WASM
+        id: build_wasm
         run: |
           mkdir build
           cd build
           cmake ..
           make wasm-release
+          zip retrolab-wasm.zip retrolab.wasm retrolab.js
       - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body: |
+          body: |   # TODO
             Changes in this Release
             - First Change
             - Second Change
           draft: true   # TODO
           prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/retrolab-wasm.zip
+          asset_name: retrolab-wasm.zip
+          asset_content_type: application/zip
