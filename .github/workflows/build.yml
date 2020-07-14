@@ -2,7 +2,8 @@ name: Build artifacts
 
 on:
   push:
-    tags: v*
+    #tags: v*
+    branch: 0-build
 
 jobs:
   engine:
@@ -16,4 +17,4 @@ jobs:
       - name: Build & run tests
         run: |
           cmake .
-          make retrolab_wasm
+          make wasm_release
