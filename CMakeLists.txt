@@ -48,26 +48,44 @@ add_custom_command(
 
 # define C source files
 set(SOURCES
-        emulator/breakpoints.h emulator/breakpoints.c
-        emulator/cpu.c         emulator/cpu.h
-        emulator/emulator.c    emulator/emulator.h
-        emulator/interrupts.h  emulator/joystick.c
-        emulator/joystick.h    emulator/keyboard.c
+        emulator/breakpoints.c
+        emulator/cpu.c
+        emulator/emulator.c
+        emulator/joystick.c
+        emulator/keyboard.c
+        emulator/memory.c
+        emulator/timer.c
+        emulator/video.c
+        compiler/compctx.c
+        compiler/compiler.c
+        compiler/debug.c
+        compiler/input.c
+        compiler/output.c
+        compiler/parameter.c
+        compiler/symtbl.c
+        ${BISON_parser_OUTPUT_SOURCE}
+        ${FLEX_lexer_OUTPUTS})
+
+set(HEADERS
+        emulator/breakpoints.h
+        emulator/cpu.h
+        emulator/emulator.h
+        emulator/interrupts.h
+        emulator/joystick.h
         emulator/keyboard.h
-        emulator/memory.c      emulator/memory.h
-        emulator/timer.c       emulator/timer.h
-        emulator/video.c       emulator/video.h
-        compiler/compctx.c     compiler/compctx.h
-        compiler/compiler.c    compiler/compiler.h
-        compiler/debug.c       compiler/debug.h
+        emulator/memory.h
+        emulator/timer.h
+        emulator/video.h
+        compiler/compctx.h
+        compiler/compiler.h
+        compiler/debug.h
         compiler/error.h
-        compiler/input.c      compiler/input.h
-        compiler/output.c     compiler/output.h
-        compiler/parameter.c  compiler/parameter.h
-        compiler/symtbl.c     compiler/symtbl.h
+        compiler/input.h
+        compiler/output.h
+        compiler/parameter.h
+        compiler/symtbl.h
         compiler/bytearray.h
-        ${BISON_parser_OUTPUTS}
-        ${FLEX_lexer_OUTPUTS}
+        ${BISON_parser_OUTPUT_HEADER}
         ${CMAKE_CURRENT_BINARY_DIR}/font.h
         ${CMAKE_CURRENT_BINARY_DIR}/mmap.h
         ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def.h)
@@ -83,13 +101,13 @@ add_custom_command(
 add_custom_target(retrolab.def)
 
 # retrolab executable
-add_executable(retrolab main.c ${SOURCES})
+add_executable(retrolab main.c ${SOURCES} ${HEADERS})
 target_compile_options(retrolab PRIVATE -Wall -Wextra)
 target_link_libraries(retrolab ${SDL2_LIBRARIES})
 
 # tests
 enable_testing()
-add_executable(retrolab_test tests.c ${SOURCES})
+add_executable(retrolab_test tests.c ${SOURCES} ${HEADERS})
 target_compile_options(retrolab_test PRIVATE -Wall -Wextra -DHEADLESS)
 target_link_libraries(retrolab_test ${SDL2_LIBRARIES})
 add_test(test retrolab_test)
@@ -102,3 +120,12 @@ add_custom_target(test-leaks
         DEPENDS retrolab_test
         COMMAND valgrind --leak-check=full --show-leak-kinds=all ${CMAKE_CURRENT_BINARY_DIR}/retrolab_test
         USES_TERMINAL)
+
+# WASM
+set(CMAKE_VERBOSE_MAKEFILE ON)
+set(WASM_SOURCES ${SOURCES} main.c emulator/glue.c)
+set(WASM_OPTIONS -o ${CMAKE_CURRENT_BINARY_DIR}/retrolab.js -Wall -Wextra -s WASM=1 -s USE_SDL=2 -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\",\"print\",\"printErr\",\"addFunction\",\"free\"]' -s NO_EXIT_RUNTIME=1 -s RESERVED_FUNCTION_POINTERS=10 -I${CMAKE_CURRENT_BINARY_DIR} -Icompiler -Iemulator)
+add_custom_target(wasm-release
+        DEPENDS ${WASM_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/font.h ${CMAKE_CURRENT_BINARY_DIR}/mmap.h ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def.h
+        COMMAND emcc -O2 ${WASM_OPTIONS} ${WASM_SOURCES}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
