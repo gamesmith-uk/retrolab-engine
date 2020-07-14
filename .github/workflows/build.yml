@@ -2,8 +2,7 @@ name: Build artifacts
 
 on:
   push:
-    #tags: 'v*'
-    branch: 0-build  # TODO
+    tags: 'v*'
 
 jobs:
   engine:
@@ -38,11 +37,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body: |   # TODO
-            Changes in this Release
-            - First Change
-            - Second Change
-          draft: true   # TODO
+          draft: false
           prerelease: false
       - name: Upload Release Asset
         id: upload-release-asset
