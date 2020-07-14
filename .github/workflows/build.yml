@@ -16,5 +16,5 @@ jobs:
     - name: Build & run tests
       run: |
         cmake .
-        make
+        make retrolab_test
         make test
