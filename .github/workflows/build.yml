@@ -27,6 +27,8 @@ jobs:
           mkdir ../build
           cd ../build
           cmake ..
+          make retrolab_test
+          make test
           make wasm-release
           make retrolab.def
           zip retrolab-wasm.zip retrolab.wasm retrolab.js retrolab.def

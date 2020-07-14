@@ -95,10 +95,8 @@ set(HEADERS
 #
 
 # retrolab.def
-add_custom_command(
-        COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/constants && python3 ./constants.py --lang asm > ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def
-        OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def)
-add_custom_target(retrolab.def)
+add_custom_target(retrolab.def
+        COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/constants && python3 ./constants.py --lang asm > ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def)
 
 # retrolab executable
 add_executable(retrolab main.c ${SOURCES} ${HEADERS})
