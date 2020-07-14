@@ -20,6 +20,7 @@ jobs:
           mkdir build
           cd build
           cmake ..
+          emcc
           make wasm-release
           ls
           zip retrolab-wasm.zip retrolab.wasm retrolab.js
