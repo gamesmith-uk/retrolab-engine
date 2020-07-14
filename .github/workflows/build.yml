@@ -21,6 +21,7 @@ jobs:
           ./emsdk install latest
           ./emsdk activate latest
           source ./emsdk_env.sh
+          emcc
       - name: Build WASM
         id: build_wasm
         run: |
@@ -28,7 +29,6 @@ jobs:
           cd build
           cmake ..
           make wasm-release
-          ls
           zip retrolab-wasm.zip retrolab.wasm retrolab.js
       - name: Create Release
         id: create_release
