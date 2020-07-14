@@ -16,5 +16,7 @@ jobs:
           sudo apt-get install libsdl2-dev emscripten
       - name: Build & run tests
         run: |
-          cmake .
-          make wasm_release
+          mkdir build
+          cd build
+          cmake ..
+          make wasm-release
