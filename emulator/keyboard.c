@@ -1,7 +1,7 @@
 #include "keyboard.h"
 
 #include "cpu.h"
-#include "../constants/mmap.h"
+#include "mmap.h"
 
 static uint16_t
 add_mod(uint16_t key)

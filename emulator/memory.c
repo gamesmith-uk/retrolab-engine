@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "../global.h"
-#include "../constants/mmap.h"
+#include "mmap.h"
 #include "cpu.h"
 #include "video.h"
 

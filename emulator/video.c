@@ -8,7 +8,7 @@
 #include "keyboard.h"
 #include "joystick.h"
 #include "memory.h"
-#include "../constants/mmap.h"
+#include "mmap.h"
 
 #define SCREEN_W 120
 #define SCREEN_H 135

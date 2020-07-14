@@ -5,7 +5,7 @@
 
 #include "cpu.h"
 #include "memory.h"
-#include "../constants/mmap.h"
+#include "mmap.h"
 
 void
 joystic_update_state()

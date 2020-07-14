@@ -8,7 +8,7 @@
 #include "memory.h"
 #include "video.h"
 #include "../compiler/output.h"
-#include "../constants/mmap.h"
+#include "mmap.h"
 
 // {{{ init / stop / main loop
 

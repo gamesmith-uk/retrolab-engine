@@ -2,7 +2,7 @@
 
 #include "breakpoints.h"
 #include "memory.h"
-#include "../constants/mmap.h"
+#include "mmap.h"
 
 #include <stdbool.h>
 #include <stdlib.h>

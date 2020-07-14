@@ -1,3 +1,7 @@
+#
+# SETUP
+#
+
 # initialization
 cmake_minimum_required(VERSION 3.16)
 project(retrolab C)
@@ -18,6 +22,10 @@ include_directories("./compiler")
 include_directories("./emulator")
 set(CMAKE_C_STANDARD 11)
 
+#
+# INTERMEDIATE FILES
+#
+
 # compile retrolab compiler
 flex_target(lexer compiler/retrolab.l ${CMAKE_CURRENT_BINARY_DIR}/lex.c DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/lex.h)
 bison_target(parser compiler/retrolab.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c)
@@ -27,6 +35,16 @@ add_flex_bison_dependency(lexer parser)
 add_custom_command(
         OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/font.h
         COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/emulator && xxd -i font.bmp > ${CMAKE_CURRENT_BINARY_DIR}/font.h)
+
+# build constants files
+add_custom_command(
+        OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/mmap.h
+        COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/constants && python3 ./constants.py --lang c > ${CMAKE_CURRENT_BINARY_DIR}/mmap.h
+)
+add_custom_command(
+        OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def.h
+        COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/constants && python3 ./constants.py --lang asm_c > ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def.h
+)
 
 # define C source files
 set(SOURCES
@@ -50,9 +68,21 @@ set(SOURCES
         compiler/bytearray.h
         ${BISON_parser_OUTPUTS}
         ${FLEX_lexer_OUTPUTS}
-        ${CMAKE_CURRENT_BINARY_DIR}/font.h)
+        ${CMAKE_CURRENT_BINARY_DIR}/font.h
+        ${CMAKE_CURRENT_BINARY_DIR}/mmap.h
+        ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def.h)
 
-# output - retrolab executable
+#
+# OUTPUTS
+#
+
+# retrolab.def
+add_custom_command(
+        COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/constants && python3 ./constants.py --lang asm > ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def
+        OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def)
+add_custom_target(retrolab.def)
+
+# retrolab executable
 add_executable(retrolab main.c ${SOURCES})
 target_compile_options(retrolab PRIVATE -Wall -Wextra)
 target_link_libraries(retrolab ${SDL2_LIBRARIES})

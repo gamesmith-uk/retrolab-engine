@@ -7,7 +7,7 @@
 #include <string.h>
 
 #include "../global.h"
-#include "../constants/mmap.h"
+#include "mmap.h"
 #include "breakpoints.h"
 #include "cpu.h"
 #include "joystick.h"

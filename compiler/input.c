@@ -2,7 +2,7 @@
 
 #include "../global.h"
 #include "input.h"
-#include "../constants/retrolab.def.h"
+#include "retrolab.def.h"
 
 #include <stdbool.h>
 #include <stdio.h>

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #include "cpu.h"
-#include "../constants/mmap.h"
+#include "mmap.h"
 #include "memory.h"
 
 #define TIMERS 4
