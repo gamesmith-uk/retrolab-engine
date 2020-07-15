@@ -101,13 +101,13 @@ add_custom_command(
 add_custom_target(retrolab.def)
 
 # retrolab executable
-add_executable(retrolab main.c ${SOURCES} ${HEADERS})
+add_executable(retrolab main.c exec/exec.c ${SOURCES} ${HEADERS} exec/exec.c exec/exec.h)
 target_compile_options(retrolab PRIVATE -Wall -Wextra)
 target_link_libraries(retrolab ${SDL2_LIBRARIES})
 
 # tests
 enable_testing()
-add_executable(retrolab_test tests.c ${SOURCES} ${HEADERS})
+add_executable(retrolab_test tests.c exec/exec.c ${SOURCES} ${HEADERS})
 target_compile_options(retrolab_test PRIVATE -Wall -Wextra -DHEADLESS)
 target_link_libraries(retrolab_test ${SDL2_LIBRARIES})
 add_test(test retrolab_test)

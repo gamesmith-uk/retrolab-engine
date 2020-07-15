@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <getopt.h>
+#include <dirent.h>
 
 #include <SDL2/SDL.h>
 
@@ -10,6 +11,8 @@
 #include "compiler/compiler.h"
 
 #include "emulator/memory.h"
+
+#include "exec/exec.h"
 
 static void
 main_loop()
@@ -37,39 +40,28 @@ parse_args(int argc, char* argv[])
             { "rom",          required_argument, 0, 'r' },
             { "compile-file", required_argument, 0, 'c' },
             { "source-file",  required_argument, 0, 's' },
+            { "source-dir",   required_argument, 0, 'd' },
             { 0, 0, 0, 0 },
         };
 
         int opt_idx;
-        c = getopt_long(argc, argv, "r:c:s:", long_options, &opt_idx);
+        c = getopt_long(argc, argv, "r:c:s:d:", long_options, &opt_idx);
         if (c == -1)
             break;
         switch (c) {
             case 'r':
                 emulator_load_rom(optarg);
                 break;
-            case 'c': {
-                    Output* output = compile_file(optarg);
-                    const char* error = output_error_message(output);
-                    if (error) {
-                        fprintf(stderr, "%s\n", error);
-                        exit(1);
-                    }
-                    fwrite(output_binary_data(output), output_binary_size(output), 1, stdout);
-                    output_free(output);
-                    exit(0);
-                }
+            case 'c':
+                exit(exec_compile_to_stdout(optarg));
                 break;
-            case 's': {
-                    Output* output = compile_file(optarg);
-                    const char* error = output_error_message(output);
-                    if (error) {
-                        fprintf(stderr, "%s\n", error);
-                        exit(1);
-                    }
-                    ram_load(0, output_binary_data(output), output_binary_size(output));
-                    output_free(output);
-                }
+            case 's':
+                if (exec_compile_file_to_ram(optarg) != 0)
+                    exit(1);
+                break;
+            case 'd':
+                if (exec_compile_dir_to_ram(optarg) != 0)
+                    exit(1);
                 break;
         }
     }

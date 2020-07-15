@@ -23,6 +23,12 @@ Compiling and running from source assembly file:
 $ retrolab -s SOURCE_FILE.s
 ```
 
+Compiling and running from source assembly project directory:
+
+```bash
+$ retrolab -d MY_PROJECT/
+```
+
 Compiling a file into ROM:
 
 ```bash
