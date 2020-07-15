@@ -1,6 +1,6 @@
 # retrolab
 
-![Run tests](https://github.com/gamesmith-uk/retrolab-engine/workflows/Run%20tests/badge.svg)
+![Run tests](https://github.com/gamesmith-uk/retrolab-engine/workflows/Run%20tests/badge.svg?event=push)
 
 This is the repository for the free and open source standalone emulator and compiler for
 retrolab.
