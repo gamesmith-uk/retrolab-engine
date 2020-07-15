@@ -4,7 +4,10 @@
 
 # initialization
 cmake_minimum_required(VERSION 3.16)
-project(retrolab C)
+project(retrolab
+        VERSION 1.0.0
+        LANGUAGES C
+        HOMEPAGE_URL https://retrolab.gamesmith.uk/)
 
 # install cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
@@ -21,6 +24,7 @@ include_directories(".")
 include_directories("./compiler")
 include_directories("./emulator")
 set(CMAKE_C_STANDARD 11)
+add_definitions(-DVERSION="${CMAKE_PROJECT_VERSION}" -DHOMEPAGE="${CMAKE_PROJECT_HOMEPAGE_URL}")
 
 #
 # INTERMEDIATE FILES
