@@ -14,6 +14,9 @@ source form.
 
 #### Usage:
 
+The full documentation of the emulator and compiler architecture is [here](https://retrolab.gamesmith.uk/learn).
+Below is the documentation for the standalone application.
+
 Compiling and running from source assembly file:
 
 ```bash
