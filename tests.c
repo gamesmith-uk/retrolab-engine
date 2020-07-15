@@ -8,6 +8,7 @@
 #include "emulator/cpu.h"
 #include "emulator/emulator.h"
 #include "emulator/memory.h"
+#include "exec/exec.h"
 
 // {{{ test infrastructure
 
@@ -1143,6 +1144,27 @@ static int breakpoints()
 
 // }}}
 
+// {{{ compiler execution
+
+static int exec_dir() {
+    _assert(exec_compile_dir_to_ram("../test-dir") == 0);
+    _assert(ram_get(0) == 0x2);
+    _assert(ram_get(1) == 0x90);
+    _assert(ram_get(2) == 0x8a);
+    _assert(ram_get(3) == 0x40);
+    return 0;
+}
+
+static int execution()
+{
+    printf("Execution:\n");
+    verify(exec_dir);
+    printf("\n");
+    return 0;
+}
+
+// }}}
+
 // 
 // MAIN
 //
@@ -1172,7 +1194,8 @@ int main()
                  + interrupts()
                  + external()
                  + emulator_debug()
-                 + breakpoints();
+                 + breakpoints()
+                 + execution();
     int result = compiler + emulator;
     if (result == 0)
         printf("All tests passed " BGRN ":)" RST "\n");

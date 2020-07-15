@@ -83,6 +83,6 @@ int exec_compile_dir_to_ram(const char* filename)
         ram_load(0, output_binary_data(output), output_binary_size(output));
         output_free(output);
     }
-    return 1;
+    return 0;
 }
 
