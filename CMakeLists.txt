@@ -5,7 +5,7 @@
 # initialization
 cmake_minimum_required(VERSION 3.16)
 project(retrolab
-        VERSION 1.0.0
+        VERSION 0.9.3
         LANGUAGES C
         HOMEPAGE_URL https://retrolab.gamesmith.uk/)
 
@@ -99,10 +99,8 @@ set(HEADERS
 #
 
 # retrolab.def
-add_custom_command(
-        COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/constants && python3 ./constants.py --lang asm > ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def
-        OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def)
-add_custom_target(retrolab.def)
+add_custom_target(retrolab-def
+        COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/constants && python3 ./constants.py --lang asm > ${CMAKE_CURRENT_BINARY_DIR}/retrolab-${CMAKE_PROJECT_VERSION}.def)
 
 # retrolab executable
 add_executable(retrolab main.c exec/exec.c ${SOURCES} ${HEADERS} exec/exec.c exec/exec.h)
@@ -127,8 +125,11 @@ add_custom_target(test-leaks
 
 # WASM
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(WASM_SOURCES ${SOURCES} main.c emulator/glue.c)
-set(WASM_OPTIONS -o ${CMAKE_CURRENT_BINARY_DIR}/retrolab.js -Wall -Wextra -s WASM=1 -s USE_SDL=2 -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\",\"print\",\"printErr\",\"addFunction\",\"free\"]' -s NO_EXIT_RUNTIME=1 -s RESERVED_FUNCTION_POINTERS=10 -I${CMAKE_CURRENT_BINARY_DIR} -Icompiler -Iemulator)
+set(WASM_SOURCES ${SOURCES} emulator/glue.c)
+set(WASM_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/retrolab-${CMAKE_PROJECT_VERSION})
+set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES ${WASM_OUTPUT}.js)
+set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES ${WASM_OUTPUT}.wasm)
+set(WASM_OPTIONS -o ${WASM_OUTPUT}.js -Wall -Wextra -s WASM=1 -s USE_SDL=2 -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\",\"print\",\"printErr\",\"addFunction\",\"free\"]' -s NO_EXIT_RUNTIME=1 -s RESERVED_FUNCTION_POINTERS=10 -I${CMAKE_CURRENT_BINARY_DIR} -Icompiler -Iemulator)
 add_custom_target(wasm-release
         DEPENDS ${WASM_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/font.h ${CMAKE_CURRENT_BINARY_DIR}/mmap.h ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def.h
         COMMAND emcc -O2 ${WASM_OPTIONS} ${WASM_SOURCES}
