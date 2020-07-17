@@ -5,7 +5,7 @@
 # initialization
 cmake_minimum_required(VERSION 3.16)
 project(retrolab
-        VERSION 0.9.4
+        VERSION 0.9.5
         LANGUAGES C
         HOMEPAGE_URL https://retrolab.gamesmith.uk/)
 
