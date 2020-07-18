@@ -80,6 +80,8 @@ video_init_data()
     // text color
     memset(&ram[VIDEO_TXT_COLOR], (COLOR_LIME << 4) | COLOR_BLACK, LINES);
     ram[VIDEO_CURSOR_INFO] = (1 << 4) | COLOR_ORANGE;  // visible, whole, non-blinking, orange
+
+    ram[VIDEO_TXT + 39] = 'A';  // only to identify version 0.9.0
 }
 
 void
