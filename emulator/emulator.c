@@ -151,6 +151,7 @@ emulator_dbg_json(size_t memory_block, char* buf, size_t bufsz)
     n += joystick_dbg_json(&buf[n], bufsz - n);
     PRINT(",");
     n += bkps_dbg_json(&buf[n], bufsz - n);
+    PRINT(",\"archVersion\":\"" VERSION "\"");
     PRINT("}");
     return (long) n > (long) bufsz;  // return -1 if allocated string is not big enough
 #undef PRINT
