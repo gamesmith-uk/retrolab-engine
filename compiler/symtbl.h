@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #define SYMBOL_NOT_FOUND LONG_MIN
+#define SYMBOL_ALREADY_EXISTS -1
 
 typedef struct SymbolTable SymbolTable;
 

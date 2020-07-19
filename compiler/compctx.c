@@ -105,10 +105,12 @@ cc_pc(const CompilationContext* cc)
 void
 cc_register_label(CompilationContext* cc, const char* name)
 {
-    if (cc->pass == 1)
-        symtbl_add_symbol(cc->symtbl, name, cc->pc, true);
-    else if (name[0] != '.')
+    if (cc->pass == 1) {
+        if (symtbl_add_symbol(cc->symtbl, name, cc->pc, true) == SYMBOL_ALREADY_EXISTS)
+            yyerror(cc, "Symbol '%s' alredy exists", name);
+    } else if (name[0] != '.') {
         symtbl_set_global(cc->symtbl, name);
+    }
 }
 
 void
@@ -120,7 +122,7 @@ cc_register_define(CompilationContext* cc, const char* name, long value)
     }
 
     if (cc->pass == 1) {
-        if (symtbl_add_symbol(cc->symtbl, name, value, false) != 0) {
+        if (symtbl_add_symbol(cc->symtbl, name, value, false) == SYMBOL_ALREADY_EXISTS) {
             yyerror(cc, "Symbol '%s' alredy exists", name);
         }
     }

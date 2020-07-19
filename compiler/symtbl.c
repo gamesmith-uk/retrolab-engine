@@ -78,7 +78,7 @@ symtbl_add_symbol(SymbolTable* tbl, const char* name, int value, bool update_glo
     static char new_name[1024];
     make_identifier_name(tbl, name, new_name, sizeof(new_name));
     if (symtbl_find(tbl, new_name) != SYMBOL_NOT_FOUND)
-        return -1;
+        return SYMBOL_ALREADY_EXISTS;
     ++tbl->symbols_sz;
     tbl->symbols = realloc(tbl->symbols, tbl->symbols_sz * sizeof(Symbol));
     tbl->symbols[tbl->symbols_sz-1].name = strdup(new_name);

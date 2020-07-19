@@ -455,6 +455,8 @@ ASSERT_C(label_expr,              "nop\n"
                                   "xx: jmp xx + 4",           0x00, 0x60, 0x05);
 ASSERT_ERROR(label_not_found,     "jmp xx");
 ASSERT_ERROR(two_labels,          "aa: bb: nop");
+ASSERT_ERROR(repeated_label,      "aax: nop\naax: nop");
+ASSERT_ERROR(repeated_local_label,"aax: nop\n.bbx: nop\n.bbx: nop");
 
 static int
 labels()
@@ -471,6 +473,8 @@ labels()
     verify(label_expr);
     verify(label_not_found);
     verify(two_labels);
+    verify(repeated_label);
+    verify(repeated_local_label);
     printf("\n");
     return 0;
 }
