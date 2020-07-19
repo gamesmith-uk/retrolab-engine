@@ -72,9 +72,9 @@ output_to_json(const Output* output, char* buf, size_t bufsz)
         const char* filename = output->error.filename;
         size_t line = output->error.line;
         if (filename) {
-            PRINT("{\"error\":\"%s\",\"file\":\"%s\",\"line\":%zu}", error, filename, line);
+            PRINT("{\"error\":\"%s\",\"file\":\"%s\",\"line\":%zu,\"archVersion\":\"" VERSION "\"}", error, filename, line);
         } else {
-            PRINT("{\"error\":\"%s\"}", error);
+            PRINT("{\"error\":\"%s\",\"archVersion\":\"" VERSION "\"}", error);
         }
     } else {
         PRINT("{\"binary\":[");
@@ -97,7 +97,7 @@ output_to_json(const Output* output, char* buf, size_t bufsz)
         PRINT("]");
         */
         
-        PRINT("}");
+        PRINT(",\"archVersion\":\"" VERSION "\"}");
     }
 
     return (long) n > (long) bufsz;  // return -1 if allocated string is not big enough
