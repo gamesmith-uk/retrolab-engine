@@ -1061,9 +1061,16 @@ ASSERT_EXEC(_memcpy, "mov  [0x30], 4\n"
                      "mov  [0x32], 2\n"
                      "mov  [0x33], 1\n"
                      "mov  X, 0x30\n"
-                     "mov  Y, 0x50\n"
-                     "dev  DEV_MEM_MGR, 3", 
+                     "mov  F, 0x50\n"
+                     "mov  Y, 3\n"
+                     "dev  DEV_MEM_MGR, MEM_CPY",
                      ram[0x50] == 4 && ram[0x51] == 3 && ram[0x52] == 2 && ram[0x53] == 0);
+
+ASSERT_EXEC(_memset, "mov  X, 0x10\n"
+                     "mov  Y, 3\n"
+                     "mov  F, 'x'\n"
+                     "dev  DEV_MEM_MGR, MEM_SET",
+                     ram[0x10] == 'x' && ram[0x11] == 'x' && ram[0x12] == 'x' && ram[0x14] != 'x');
 
 ASSERT_EXEC(_random, "mov A, [CPU_RANDOM]\n"
                      "mov B, [CPU_RANDOM]\n"
@@ -1073,6 +1080,7 @@ static int external()
 {
     printf("External:\n");
     verify(_memcpy);
+    verify(_memset);
     verify(_random);
     printf("\n");
     return 0;

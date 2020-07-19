@@ -53,7 +53,14 @@ static bool           break_next = false;
 
 static void memory_manager(uint16_t command)
 {
-    memmove(&ram[Y], &ram[X], min(command, 0xFFFF - X + 1));
+    switch (command) {
+        case MEM_CPY:
+            memmove(&ram[F], &ram[X], min(Y, 0xFFFF - Y + 1));
+            break;
+        case MEM_SET:
+            memset(&ram[X], F & 0xff, min(Y, 0xfff - Y + 1));
+            break;
+    }
 }
 
 // }}}

@@ -78,7 +78,7 @@ video_init_data()
     SET_COLOR(COLOR_DARK_GRAY,  0x333c57);
 
     // text color
-    memset(&ram[VIDEO_TXT_COLOR], (COLOR_LIME << 4) | COLOR_BLACK, LINES);
+    memset(&ram[VIDEO_TXT_COLOR], (COLOR_LIME << 4) | COLOR_BLACK, LINES * COLUMNS);
     ram[VIDEO_CURSOR_INFO] = (1 << 4) | COLOR_ORANGE;  // visible, whole, non-blinking, orange
 }
 
@@ -174,13 +174,13 @@ static void
 draw_background()
 {
     SDL_RenderSetScale(ren, zoom, zoom);
-    for (size_t i = 0; i < LINES; ++i) {
+    for (size_t i = 0; i < LINES * COLUMNS; ++i) {
         SDL_Color bg = palette_color(ram[VIDEO_TXT_COLOR + i] & 0xf);
         SDL_SetRenderDrawColor(ren, bg.r, bg.g, bg.b, bg.a);
         SDL_Rect r = { 
-            .x = BORDER * 2,
-            .y = (BORDER * 2) + (i * CHAR_H),
-            .w = SCREEN_W * 2,
+            .x = (BORDER * 2) + (i % CHAR_W),
+            .y = (BORDER * 2) + (i / CHAR_W),
+            .w = CHAR_W,
             .h = CHAR_H
         };
         SDL_RenderFillRect(ren, &r);
@@ -195,6 +195,7 @@ draw_text(CursorInfo* cursor)
     for (size_t i = 0; i < (COLUMNS * LINES); ++i) {
         char c = ram[VIDEO_TXT + i];
         int line = i / COLUMNS;
+        int column = i % COLUMNS;
         int orig_x = (c / 16) * CHAR_W;
         int orig_y = (c % 16) * CHAR_H;
         int dest_x = (i % COLUMNS) * CHAR_W + (BORDER * 2);
@@ -208,7 +209,7 @@ draw_text(CursorInfo* cursor)
             SDL_Color bg = palette_color(ram[VIDEO_TXT_COLOR + i] & 0xf);
             SDL_SetTextureColorMod(font, bg.r, bg.g, bg.b);
         } else {
-            SDL_Color fg = palette_color(ram[VIDEO_TXT_COLOR + line] >> 4);
+            SDL_Color fg = palette_color(ram[VIDEO_TXT_COLOR + i] >> 4);
             SDL_SetTextureColorMod(font, fg.r, fg.g, fg.b);
         }
         if (c != 0 && c != 32) {

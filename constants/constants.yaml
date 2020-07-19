@@ -92,14 +92,29 @@
 #
 # Device requests
 #
+- comments:
+    - Memory management
 
 - name: DEV_MEM_MGR
   addr: 0x2
   comments:
-    - 'used to copy a block of memory:'
+    - 'Memory manager device'
+
+- name: MEM_CPY
+  addr: 0x0
+  comments:
+    - 'copy a block of memory:'
     - '  [register X]: initial origin position'
-    - '  [register Y]: initial destination position'
-    - '  [paramter]:   memory block size'
+    - '  [register Y]: memory block size'
+    - '  [register F]: initial destination position'
+
+- name: MEM_SET
+  addr: 0x1
+  comments:
+    - 'set a block of memory:'
+    - '  [register X]: initial destination position'
+    - '  [register Y]: memory block size'
+    - '  [register F]: byte to set (first 8 bits)'
 
 #
 # colors
@@ -232,9 +247,9 @@
   comments: 
     - text (40 * 30 characters)
 - name: VIDEO_TXT_COLOR
-  size: 30
+  size: 1200
   comments:
-    - text line color - 30 lines
+    - character cell line color - 40 characters * 30 lines
     - each byte = foreground / background color
 - name: VIDEO_CURSOR_INFO
   size: 1
