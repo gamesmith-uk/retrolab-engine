@@ -2,6 +2,9 @@ BLINK_SHOW = (COLOR_CYAN << 4)								  ; color when blinking is on
 BLINK_HIDE = COLOR_BLACK											  ; color when blinking is off
 BLINK_LINE = VIDEO_TXT_COLOR + 2								; line color address for line 2
 
+                ; first char = green on dark blue
+                mov         [VIDEO_TXT_COLOR], ((COLOR_GREEN << 4) | COLOR_DARK_BLUE)
+
 				; place cursor at the end of sentence
 				mov			^[VIDEO_CURSOR_POS], msglen - 1	
 
