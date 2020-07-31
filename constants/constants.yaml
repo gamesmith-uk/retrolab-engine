@@ -322,9 +322,9 @@
 #  comments:
 #    - 64 sprites * 128 bytes per sprite = 8192 bytes (0x2000)
 #    - (size 16*16, 2 pixels per byte)
-#- name: VIDEO_PALETTE
-#  size: 48
-#  comments:
-#    - palette (3 bytes per color)
+- name: VIDEO_PALETTE
+  size: 48
+  comments:
+    - palette (3 bytes per color)
 
 # TODO - add VIDEO_PIXEL_DATA
