@@ -155,8 +155,18 @@
 - name: COLOR_DARK_GRAY
   addr: 0xf
 
+#
+# number of LINES and COLUMNS
+#
+- comments:
+  - Video size
+- name: TEXT_LINES
+  addr: 30
+- name: TEXT_COLUMNS
+  addr: 40
+
 # 
-# other definitions
+# other definitions (this should be the last definition)
 #
 
 - comments:
@@ -229,15 +239,15 @@
 
 - comments:
   - Video
-- name: VIDEO_MODE
-  size: 1
-  comments:
-    - video config
-    - '[bit 0]: 0 = sprite/tiles, 1 = pixel data'
-    - '[bit 1]: interrupt on start of frame'
-    - '[bit 2]: interrupt of end of frame'
-    - '[bit 3]: interrupt of start of line'
-    - '[bit 4]: interrupt on end of file'
+#- name: VIDEO_MODE
+#  size: 1
+#  comments:
+#    - video config
+#    - '[bit 0]: 0 = sprite/tiles, 1 = pixel data'
+#    - '[bit 1]: interrupt on start of frame'
+#    - '[bit 2]: interrupt of end of frame'
+#    - '[bit 3]: interrupt of start of line'
+#    - '[bit 4]: interrupt on end of file'
 - name: VIDEO_BORDER
   size: 1
   comments:
@@ -263,55 +273,55 @@
   size: 2
   comments:
     - cursor position (continuous)
-- name: VIDEO_VBLANK
-  size: 1
-  comments:
-    - 'raster: is beam in VBLANK?'
-- name: VIDEO_BEAM_X
-  size: 1
-  comments:
-    - beam position X (line from 0 - 119, porch from 120-239)
-- name: VIDEO_BEAM_Y
-  size: 1
-  comments:
-    - beam position Y (frame from 0 - 135, ...)
-- name: VIDEO_TXT_DISLOC_X
-  size: 1
-  comments:
-    - text dislocation (horizontal)
-- name: VIDEO_TXT_DISLOC_Y
-  size: 1
-  comments:
-    - text dislocation (vertical)
-- name: VIDEO_TILE_MAP1   # TODO - create a large map
-  size: 290
-  comments:
-    - 290 bytes (0x122)
-    - '[000-11F]: (first 7 bits: tile index -- last bit: horizontal flip)'
-    - '[    120]: vertical dislocation'
-    - '[    121]: horizontal dislocation'
-    - '[122-130]: unused'
-- name: VIDEO_TILE_MAP2
-  size: 290
-- name: VIDEO_SPRITE_MAP
-  size: 256
-  comments:
-    - 32 sprites on screen * 8 bytes = 256 bytes (0x100)
-    - '[   00]: sprite index'
-    - '[   01]: graphical representation: (visible, flip horizontal, vertical, double size)'
-    - '[02-03]: position on screen'
-    - '[04-07]: four first collisions (0xFF - no collision)'
-- name: VIDEO_TILE_DATA
-  size: 1280
-  comments:
-    - '128 tiles * 10 bytes per tile = 1280 bytes (0x500)'
-    - '[00-01]: tile palette (max 4 colors)'
-    - '[02-0A]: tile data (each byte - 1 line)'
-- name: VIDEO_SPRITE_DATA
-  size: 0x1000
-  comments:
-    - 64 sprites * 128 bytes per sprite = 8192 bytes (0x2000)
-    - (size 16*16, 2 pixels per byte)
+#- name: VIDEO_VBLANK
+#  size: 1
+#  comments:
+#    - 'raster: is beam in VBLANK?'
+#- name: VIDEO_BEAM_X
+#  size: 1
+#  comments:
+#    - beam position X (line from 0 - 119, porch from 120-239)
+#- name: VIDEO_BEAM_Y
+#  size: 1
+#  comments:
+#    - beam position Y (frame from 0 - 135, ...)
+#- name: VIDEO_TXT_DISLOC_X
+#  size: 1
+#  comments:
+#    - text dislocation (horizontal)
+#- name: VIDEO_TXT_DISLOC_Y
+#  size: 1
+#  comments:
+#    - text dislocation (vertical)
+#- name: VIDEO_TILE_MAP1   # TODO - create a large map
+#  size: 290
+#  comments:
+#    - 290 bytes (0x122)
+#    - '[000-11F]: (first 7 bits: tile index -- last bit: horizontal flip)'
+#    - '[    120]: vertical dislocation'
+#    - '[    121]: horizontal dislocation'
+#    - '[122-130]: unused'
+#- name: VIDEO_TILE_MAP2
+#  size: 290
+#- name: VIDEO_SPRITE_MAP
+#  size: 256
+#  comments:
+#    - 32 sprites on screen * 8 bytes = 256 bytes (0x100)
+#    - '[   00]: sprite index'
+#    - '[   01]: graphical representation: (visible, flip horizontal, vertical, double size)'
+#    - '[02-03]: position on screen'
+#    - '[04-07]: four first collisions (0xFF - no collision)'
+#- name: VIDEO_TILE_DATA
+#  size: 1280
+#  comments:
+#    - '128 tiles * 10 bytes per tile = 1280 bytes (0x500)'
+#    - '[00-01]: tile palette (max 4 colors)'
+#    - '[02-0A]: tile data (each byte - 1 line)'
+#- name: VIDEO_SPRITE_DATA
+#  size: 0x1000
+#  comments:
+#    - 64 sprites * 128 bytes per sprite = 8192 bytes (0x2000)
+#    - (size 16*16, 2 pixels per byte)
 - name: VIDEO_PALETTE
   size: 48
   comments:

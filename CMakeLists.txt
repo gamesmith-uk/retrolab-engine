@@ -129,8 +129,8 @@ set(WASM_SOURCES ${SOURCES} emulator/glue.c)
 set(WASM_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/retrolab-${CMAKE_PROJECT_VERSION})
 set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES ${WASM_OUTPUT}.js)
 set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES ${WASM_OUTPUT}.wasm)
-set(WASM_OPTIONS -o ${WASM_OUTPUT}.js -Wall -Wextra -s WASM=1 -s USE_SDL=2 -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\",\"print\",\"printErr\",\"addFunction\",\"free\"]' -s NO_EXIT_RUNTIME=1 -s RESERVED_FUNCTION_POINTERS=10 -I${CMAKE_CURRENT_BINARY_DIR} -Icompiler -Iemulator -DVERSION=\\"${CMAKE_PROJECT_VERSION}\\")
+set(WASM_OPTIONS -o ${WASM_OUTPUT}.js -Wall -Wextra -s WASM=1 -s USE_SDL=2 -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\",\"print\",\"printErr\",\"addFunction\",\"free\"]' -s EXPORTED_FUNCTIONS='[\"_free\",\"_malloc\"]' -s NO_EXIT_RUNTIME=1 -s RESERVED_FUNCTION_POINTERS=10 -I${CMAKE_CURRENT_BINARY_DIR} -Icompiler -Iemulator -DVERSION=\\"${CMAKE_PROJECT_VERSION}\\")
 add_custom_target(wasm-release
         DEPENDS ${WASM_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/font.h ${CMAKE_CURRENT_BINARY_DIR}/mmap.h ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def.h
-        COMMAND emcc -O2 ${WASM_OPTIONS} ${WASM_SOURCES}
+        COMMAND emcc -O3 ${WASM_OPTIONS} ${WASM_SOURCES}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})

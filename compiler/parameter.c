@@ -39,11 +39,11 @@ next_number_sign(CompilationContext* cc, uint8_t prefix8, uint8_t prefix16, long
 {
     if (number < 0x80 && number >= -0x80 && !force_v16) {
         return (ByteArray) { .sz = 2, .bytes = { prefix8, (uint8_t) number } };
-    } else if (number < 0x8000 && number >= -0x8000) {
+    } else if (number < 0x10000) {
         uint16_t value = (uint16_t) number;
         return (ByteArray) { .sz = 3, .bytes = { prefix16, value & 0xff, value >> 8 } };
     }
-    yyerror(cc, "Value too high (range: -0x8000 ~ 0x7FFF, received: 0x%X)", number);
+    yyerror(cc, "Value too high (range: 0x0000 ~ 0xFFFF, received: 0x%X)", number);
     return (ByteArray) { .sz = 0 };
 }
 
