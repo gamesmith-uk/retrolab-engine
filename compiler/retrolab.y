@@ -55,7 +55,7 @@ void           yyerror(CompilationContext* cc, const char* fmt, ...);
 %token T_ENTER
 
 %type <byte> register
-%type <number> expr plusminus 
+%type <number> expr
 %type <is_v16> parameter dest_parameter
 
 %parse-param {CompilationContext* cc}
@@ -178,8 +178,8 @@ dest_parameter: '[' expr ']'                         { BYTES(next_number(cc, 0x8
               | register                             { BYTE(0x90 + $1); }
               | '[' register ']'                     { BYTE(0xa0 + $2); }
               | '^' '[' register ']'                 { BYTE(0xb0 + $3); }
-              | '[' register plusminus expr ']'      { BYTES(next_number_sign(cc, 0xc0 + $2, 0xe0 + $2, $3 * $4, V_16)); }
-              | '^' '[' register plusminus expr ']'  { BYTES(next_number_sign(cc, 0xd0 + $3, 0xf0 + $3, $4 * $5, V_16)); }
+              | '[' register '+' expr ']'            { BYTES(next_number_sign(cc, 0xc0 + $2, 0xe0 + $2, $4, V_16)); }
+              | '^' '[' register '+' expr ']'        { BYTES(next_number_sign(cc, 0xd0 + $3, 0xf0 + $3, $5, V_16)); }
               ;
 
 expr: expr '+' expr          { $$ = $1 + $3; }
@@ -218,10 +218,6 @@ register: T_A   { $$ = 0x0; }
         | T_PC  { $$ = 0xe; }
         | T_OV  { $$ = 0xf; }
         ;
-
-plusminus: '+' { $$ = 1;  }
-         | '-' { $$ = -1; }
-         ;
 
 %%
 

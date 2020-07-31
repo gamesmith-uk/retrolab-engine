@@ -118,7 +118,7 @@ input_from_string()
     _assert(strcmp(input_source(input, 1), "test1") == 0);
     input_free(input);
     return 0;
-};
+}
 
 static int
 precompile()
@@ -160,24 +160,24 @@ preprocessing()
 static int
 empty_file()
 {
-    assert_c("");
+    assert_c("")
     return 0;
 }
 
 static int
 nop()
 {
-    assert_c("nop", 0x0);
-    assert_c("nop\nnop", 0x0, 0x0);
+    assert_c("nop", 0x0)
+    assert_c("nop\nnop", 0x0, 0x0)
     return 0;
 }
 
 static int
 comments()
 {
-    assert_c("nop  ; hello world", 0x0);
-    assert_c("nop  ; hello ; world", 0x0);
-    assert_c("nop  ; hello\n  ;test\nnop ; second test", 0x0, 0x0);
+    assert_c("nop  ; hello world", 0x0)
+    assert_c("nop  ; hello ; world", 0x0)
+    assert_c("nop  ; hello\n  ;test\nnop ; second test", 0x0, 0x0)
     return 0;
 }
 
@@ -196,39 +196,39 @@ basic_compilation()
 
 // {{{ parameters
 
-ASSERT_C(small_literal_pos_dec,   "pushb 32",        0x50, 0x20);
-ASSERT_C(small_literal_neg_dec,   "pushb -2",        0x50, 0b01111110);
-ASSERT_C(small_literal_neg_dec2,  "pushb -64",       0x50, 0b01000000);
-ASSERT_C(small_literal_pos_hex,   "pushb 0x12",      0x50, 0x12);
-ASSERT_C(small_literal_neg_hex,   "pushb -0X2",      0x50, 0b01111110);
-ASSERT_C(small_literal_bin,       "pushb 0b11100",   0x50, 0x1c);
-ASSERT_C(mid_literal_pos,         "pushb 128",       0x50, 0x8a, 128);
-ASSERT_C(mid_literal_neg,         "pushb -80",       0x50, 0x8a, 0xb0);
-ASSERT_C(large_literal_pos,       "pushb 0x1234",    0x50, 0x8b, 0x34, 0x12);
-ASSERT_C(large_literal_neg,       "pushb -5000",     0x50, 0x8b, 0x78, 0xec);
-ASSERT_C(large_literal_neg2,      "pushb -128",      0x50, 0x8a, 0x80);
-ASSERT_C(large_literal_neg3,      "pushb -129",      0x50, 0x8b, 0x7f, 0xff);
-ASSERT_C(char_literal,            "pushb 'A'",       0x50, 0x8a, 'A');
-ASSERT_C(char_literal_quote,      "pushb '\\''",     0x50, '\'');
-ASSERT_C(char_semicolon,          "pushb ';'",       0x50, ';');
-ASSERT_ERROR(large_literal_error, "pushb 0x123456");
-ASSERT_ERROR(char_literal_error,  "pushb 'AB'");
+ASSERT_C(small_literal_pos_dec,   "pushb 32",        0x50, 0x20)
+ASSERT_C(small_literal_neg_dec,   "pushb -2",        0x50, 0b01111110)
+ASSERT_C(small_literal_neg_dec2,  "pushb -64",       0x50, 0b01000000)
+ASSERT_C(small_literal_pos_hex,   "pushb 0x12",      0x50, 0x12)
+ASSERT_C(small_literal_neg_hex,   "pushb -0X2",      0x50, 0b01111110)
+ASSERT_C(small_literal_bin,       "pushb 0b11100",   0x50, 0x1c)
+ASSERT_C(mid_literal_pos,         "pushb 128",       0x50, 0x8a, 128)
+ASSERT_C(mid_literal_neg,         "pushb -80",       0x50, 0x8a, 0xb0)
+ASSERT_C(large_literal_pos,       "pushb 0x1234",    0x50, 0x8b, 0x34, 0x12)
+ASSERT_C(large_literal_neg,       "pushb -5000",     0x50, 0x8b, 0x78, 0xec)
+ASSERT_C(large_literal_neg2,      "pushb -128",      0x50, 0x8a, 0x80)
+ASSERT_C(large_literal_neg3,      "pushb -129",      0x50, 0x8b, 0x7f, 0xff)
+ASSERT_C(char_literal,            "pushb 'A'",       0x50, 0x8a, 'A')
+ASSERT_C(char_literal_quote,      "pushb '\\''",     0x50, '\'')
+ASSERT_C(char_semicolon,          "pushb ';'",       0x50, ';')
+ASSERT_ERROR(large_literal_error, "pushb 0x123456")
+ASSERT_ERROR(char_literal_error,  "pushb 'AB'")
 
-ASSERT_C(address8_v8,           "pushb [0x16]",    0x50, 0x8c, 0x16);
-ASSERT_C(address16_v8,          "pushb ^[0x16]",   0x50, 0x8d, 0x16);
-ASSERT_C(address8_v16,          "pushb [0x4F16]",  0x50, 0x8e, 0x16, 0x4f);
-ASSERT_C(address16_v16,         "pushb ^[0x4F16]", 0x50, 0x8f, 0x16, 0x4f);
+ASSERT_C(address8_v8,           "pushb [0x16]",    0x50, 0x8c, 0x16)
+ASSERT_C(address16_v8,          "pushb ^[0x16]",   0x50, 0x8d, 0x16)
+ASSERT_C(address8_v16,          "pushb [0x4F16]",  0x50, 0x8e, 0x16, 0x4f)
+ASSERT_C(address16_v16,         "pushb ^[0x4F16]", 0x50, 0x8f, 0x16, 0x4f)
 
-ASSERT_C(reg,                   "pushb C",         0x50, 0x92);
-ASSERT_C(reg_addr8,             "pushb [D]",       0x50, 0xa3);
-ASSERT_C(reg_addr16,            "pushb ^[XT]",     0x50, 0xbb);
+ASSERT_C(reg,                   "pushb C",         0x50, 0x92)
+ASSERT_C(reg_addr8,             "pushb [D]",       0x50, 0xa3)
+ASSERT_C(reg_addr16,            "pushb ^[XT]",     0x50, 0xbb)
 
-ASSERT_C(reg_plus_v8,           "pushb [B + 12]",      0x50, 0xc1, 12);
-ASSERT_C(reg_plus_v8_neg,       "pushb ^[B - 12]",     0x50, 0xd1, 0xf4);
-ASSERT_C(reg_plus_v16,          "pushb [B + 0x1234]",  0x50, 0xe1, 0x34, 0x12);
-ASSERT_C(reg_plus_v16_2,        "pushb ^[B + 0x1234]", 0x50, 0xf1, 0x34, 0x12);
-ASSERT_C(reg_plus_v16_exc,      "pushb [B + 0x90]",    0x50, 0xe1, 0x90, 0x00);
-ASSERT_ERROR(reg_plus_v16_error, "pushb [B + 0x9000]");
+ASSERT_C(reg_plus_v8,           "pushb [B + 12]",      0x50, 0xc1, 12)
+ASSERT_ERROR(reg_plus_v8_neg,   "pushb ^[B - 12]")
+ASSERT_C(reg_plus_v16,          "pushb [B + 0x1234]",  0x50, 0xe1, 0x34, 0x12)
+ASSERT_C(reg_plus_v16_2,        "pushb ^[B + 0x1234]", 0x50, 0xf1, 0x34, 0x12)
+ASSERT_C(reg_plus_v16_exc,      "pushb [B + 0x90]",    0x50, 0xe1, 0x90, 0x00)
+ASSERT_C(reg_plus_v16_long,     "pushb [B + 0x9000]",  0x50, 0xe1, 0x00, 0x90)
 
 static int
 parameters()
@@ -266,7 +266,7 @@ parameters()
     verify(reg_plus_v16);
     verify(reg_plus_v16_2);
     verify(reg_plus_v16_exc);
-    verify(reg_plus_v16_error);
+    verify(reg_plus_v16_long);
     printf("\n");
     return 0;
 }
@@ -275,15 +275,15 @@ parameters()
 
 // {{{ expressions
 
-ASSERT_C(plus,          "pushb 2 + 3",           0x50, 5);
-ASSERT_C(plusplus,      "pushb 2 + 3 + 4",       0x50, 9);
-ASSERT_C(order,         "pushb 2*3 + 4*5",       0x50, 26);
-ASSERT_C(shift,         "pushb 1 << 3",          0x50, 0b1000);
-ASSERT_C(expr,          "pushb (1 << 3) | 0b10", 0x50, 0b1010);
-ASSERT_C(expr2,         "pushb 1 + 2 * 3",       0x50, 7);
-ASSERT_C(expr3,         "pushb (1 + 2) * 3",     0x50, 9);
-ASSERT_C(not_op,        "pushb ~0b11010101",     0x50, 0x8b, 0b00101010, 0xff);
-ASSERT_C(complex_expr,  "pushb ((2 - 4) * -1 + (1 << 4)) + 1", 0x50, 19);
+ASSERT_C(plus,          "pushb 2 + 3",           0x50, 5)
+ASSERT_C(plusplus,      "pushb 2 + 3 + 4",       0x50, 9)
+ASSERT_C(order,         "pushb 2*3 + 4*5",       0x50, 26)
+ASSERT_C(shift,         "pushb 1 << 3",          0x50, 0b1000)
+ASSERT_C(expr,          "pushb (1 << 3) | 0b10", 0x50, 0b1010)
+ASSERT_C(expr2,         "pushb 1 + 2 * 3",       0x50, 7)
+ASSERT_C(expr3,         "pushb (1 + 2) * 3",     0x50, 9)
+ASSERT_C(not_op,        "pushb ~0b11010101",     0x50, 0x8b, 0b00101010, 0xff)
+ASSERT_C(complex_expr,  "pushb ((2 - 4) * -1 + (1 << 4)) + 1", 0x50, 19)
 
 static int
 expressions()
@@ -306,13 +306,13 @@ expressions()
 
 // {{{ operations
 
-ASSERT_C(dual_parameter,           "mov A, 0x12", 0x2, 0x90, 0x12);
-ASSERT_ERROR(dual_parameter_error, "mov 0x12, A");
-ASSERT_ERROR(not_error,            "not 0x12");
-ASSERT_C(not_ok,                   "not A",       0x15, 0x90);
-ASSERT_C(signed_op,                "add$ A, [B]", 0x21, 0x90, 0xa1);
-ASSERT_C(jmp_normal,               "jmp 0x5", 0x60, 0x5);
-ASSERT_C(jmp_special,              "jmp 0x1234", 0x63, 0x34, 0x12);
+ASSERT_C(dual_parameter,           "mov A, 0x12", 0x2, 0x90, 0x12)
+ASSERT_ERROR(dual_parameter_error, "mov 0x12, A")
+ASSERT_ERROR(not_error,            "not 0x12")
+ASSERT_C(not_ok,                   "not A",       0x15, 0x90)
+ASSERT_C(signed_op,                "add$ A, [B]", 0x21, 0x90, 0xa1)
+ASSERT_C(jmp_normal,               "jmp 0x5", 0x60, 0x5)
+ASSERT_C(jmp_special,              "jmp 0x1234", 0x63, 0x34, 0x12)
 
 // TODO - jmp, sign
 
@@ -335,20 +335,20 @@ operations()
 
 // {{{ data
 
-ASSERT_C(data_byte,        "db 0x12",              0x12);
-ASSERT_C(data_bytes,       "db 0x12, 0xaf, 0xca",  0x12, 0xaf, 0xca);
-ASSERT_C(data_seq,         "db 0, 0, 0, 3",        0, 0, 0, 3);
-ASSERT_C(data_word,        "dw 0x1234",            0x34, 0x12);
-ASSERT_C(data_words,       "dw 0x1234, 0x08, 'A'", 0x34, 0x12, 0x08, 0x00, 'A', 0x00);
-ASSERT_C(data_expression,  "db 100 * 2 + 25, 4",   225, 4);
-ASSERT_C(data_negative,    "db -100",              0x9c);
-ASSERT_C(ascii,            "db \"AB;!\"",          'A', 'B', ';', '!');
-ASSERT_C(ascii2,           "db \"AB\", 13, \"x\"", 'A', 'B', 13, 'x');
-ASSERT_C(ascii3,           "db \"AB\\\"CD\"",      'A', 'B', '"', 'C', 'D');    // db "AB\"CD"
-ASSERT_C(bss,              "bss 4",                0x0, 0x0, 0x0, 0x0);
-ASSERT_ERROR(data_error1,  "db 300");
-ASSERT_ERROR(data_error2,  "db -200");
-ASSERT_ERROR(ascii_error1, "db \"Hello world!");
+ASSERT_C(data_byte,        "db 0x12",              0x12)
+ASSERT_C(data_bytes,       "db 0x12, 0xaf, 0xca",  0x12, 0xaf, 0xca)
+ASSERT_C(data_seq,         "db 0, 0, 0, 3",        0, 0, 0, 3)
+ASSERT_C(data_word,        "dw 0x1234",            0x34, 0x12)
+ASSERT_C(data_words,       "dw 0x1234, 0x08, 'A'", 0x34, 0x12, 0x08, 0x00, 'A', 0x00)
+ASSERT_C(data_expression,  "db 100 * 2 + 25, 4",   225, 4)
+ASSERT_C(data_negative,    "db -100",              0x9c)
+ASSERT_C(ascii,            "db \"AB;!\"",          'A', 'B', ';', '!')
+ASSERT_C(ascii2,           "db \"AB\", 13, \"x\"", 'A', 'B', 13, 'x')
+ASSERT_C(ascii3,           "db \"AB\\\"CD\"",      'A', 'B', '"', 'C', 'D')    // db "AB\"CD"
+ASSERT_C(bss,              "bss 4",                0x0, 0x0, 0x0, 0x0)
+ASSERT_ERROR(data_error1,  "db 300")
+ASSERT_ERROR(data_error2,  "db -200")
+ASSERT_ERROR(ascii_error1, "db \"Hello world!")
 
 static int
 data()
@@ -376,10 +376,10 @@ data()
 
 // {{{ $ and $$
 
-ASSERT_C(dollar_sign,        "db 0, 0, 0, $",                   0, 0, 0, 3);
-ASSERT_C(dollar_double_sign, "dw 0 \n db 0, 0, $, 0, $$",       0, 0, 0, 0, 4, 0, 2);
-ASSERT_C(dollar_strlen,      "dw 0xFFFF \n db \"Hello\", $-$$", 0xff, 0xff, 'H', 'e', 'l', 'l', 'o', 5);
-ASSERT_C(jmp_dollar,         "nop \n jmp $$",                   0x00, 0x60, 0x01);
+ASSERT_C(dollar_sign,        "db 0, 0, 0, $",                   0, 0, 0, 3)
+ASSERT_C(dollar_double_sign, "dw 0 \n db 0, 0, $, 0, $$",       0, 0, 0, 0, 4, 0, 2)
+ASSERT_C(dollar_strlen,      "dw 0xFFFF \n db \"Hello\", $-$$", 0xff, 0xff, 'H', 'e', 'l', 'l', 'o', 5)
+ASSERT_C(jmp_dollar,         "nop \n jmp $$",                   0x00, 0x60, 0x01)
 
 static int
 dollar()
@@ -398,16 +398,16 @@ dollar()
 
 // {{{ defines
 
-ASSERT_C(def_simple,       "MYDEF = 0x12 \n mov A, MYDEF",              0x02, 0x90, 0x12);
-ASSERT_C(def_overlapping,  "MYDEF = 0x12 \n MY = 0x13 \n db MY, MYDEF", 0x13, 0x12);
-ASSERT_C(def_expression,   "mydef = 1 << 3 \n db mydef",                0b1000);
-ASSERT_C(def_dollar,       "db 0x0 \n xx = $ \n db xx",                 0x00, 0x01);
-ASSERT_C(def_forward,      "mov a, TEST\n TEST=1",                      0x02, 0x90, 0x8b, 0x01, 0x00);
-ASSERT_C(def_forward_jmp,  "jmp TEST\n TEST=0xa",                       0x63, 0x0a, 0x00);
-ASSERT_ERROR(def_invalid,  "ab@c = 3");
-ASSERT_ERROR(redefine_op,  "mov = 3");
-ASSERT_ERROR(redefine_def, "xx = 3 \n xx = 4");
-ASSERT_ERROR(def_dot,      ".abc = 3");
+ASSERT_C(def_simple,       "MYDEF = 0x12 \n mov A, MYDEF",              0x02, 0x90, 0x12)
+ASSERT_C(def_overlapping,  "MYDEF = 0x12 \n MY = 0x13 \n db MY, MYDEF", 0x13, 0x12)
+ASSERT_C(def_expression,   "mydef = 1 << 3 \n db mydef",                0b1000)
+ASSERT_C(def_dollar,       "db 0x0 \n xx = $ \n db xx",                 0x00, 0x01)
+ASSERT_C(def_forward,      "mov a, TEST\n TEST=1",                      0x02, 0x90, 0x8b, 0x01, 0x00)
+ASSERT_C(def_forward_jmp,  "jmp TEST\n TEST=0xa",                       0x63, 0x0a, 0x00)
+ASSERT_ERROR(def_invalid,  "ab@c = 3")
+ASSERT_ERROR(redefine_op,  "mov = 3")
+ASSERT_ERROR(redefine_def, "xx = 3 \n xx = 4")
+ASSERT_ERROR(def_dot,      ".abc = 3")
 
 static int
 defines()
@@ -431,32 +431,32 @@ defines()
 
 // {{{ labels
 
-ASSERT_C(label_simple_bw,         "nop \n xx: jmp xx",        0x00, 0x60, 0x01);
-ASSERT_C(label_simple_bw_newline, "nop \n xx: \n jmp xx",     0x00, 0x60, 0x01);
-ASSERT_C(label_simple_fw,         "jmp xx \n nop \n xx: nop", 0x63, 0x04, 0x00, 0x00, 0x00);
+ASSERT_C(label_simple_bw,         "nop \n xx: jmp xx",        0x00, 0x60, 0x01)
+ASSERT_C(label_simple_bw_newline, "nop \n xx: \n jmp xx",     0x00, 0x60, 0x01)
+ASSERT_C(label_simple_fw,         "jmp xx \n nop \n xx: nop", 0x63, 0x04, 0x00, 0x00, 0x00)
 ASSERT_C(label_2nd_param_fw,      "mov a, [xx] \n"
                                   "nop \n" 
-                                  "xx: nop",                  0x02, 0x90, 0x8e, 0x06, 0x00, 0x00, 0x00);
-ASSERT_C(local_label,             "nop \n .xx: jmp .xx",      0x00, 0x60, 0x01);
+                                  "xx: nop",                  0x02, 0x90, 0x8e, 0x06, 0x00, 0x00, 0x00)
+ASSERT_C(local_label,             "nop \n .xx: jmp .xx",      0x00, 0x60, 0x01)
 ASSERT_C(global_local_label,      "aa: \n"
                                   "     nop\n"
                                   ".bb: jmp .bb\n"
                                   "xx: \n"
-                                  ".bb: jmp .bb",             0x00, 0x60, 0x1, 0x60, 0x03);
+                                  ".bb: jmp .bb",             0x00, 0x60, 0x1, 0x60, 0x03)
 ASSERT_C(global_local_label2,     "     nop\n"
                                   ".bb: jmp .bb\n"
                                   "xx: \n"
-                                  ".bb: jmp .bb",             0x00, 0x60, 0x1, 0x60, 0x03);
+                                  ".bb: jmp .bb",             0x00, 0x60, 0x1, 0x60, 0x03)
 ASSERT_C(label_strlen,            "nop\n"
                                   "msg: db \"ABC\" \n"
                                   "len = $-msg\n"
-                                  "     db len",              0x00, 'A', 'B', 'C', 0x03);
+                                  "     db len",              0x00, 'A', 'B', 'C', 0x03)
 ASSERT_C(label_expr,              "nop\n"
-                                  "xx: jmp xx + 4",           0x00, 0x60, 0x05);
-ASSERT_ERROR(label_not_found,     "jmp xx");
-ASSERT_ERROR(two_labels,          "aa: bb: nop");
-ASSERT_ERROR(repeated_label,      "aax: nop\naax: nop");
-ASSERT_ERROR(repeated_local_label,"aax: nop\n.bbx: nop\n.bbx: nop");
+                                  "xx: jmp xx + 4",           0x00, 0x60, 0x05)
+ASSERT_ERROR(label_not_found,     "jmp xx")
+ASSERT_ERROR(two_labels,          "aa: bb: nop")
+ASSERT_ERROR(repeated_label,      "aax: nop\naax: nop")
+ASSERT_ERROR(repeated_local_label,"aax: nop\n.bbx: nop\n.bbx: nop")
 
 static int
 labels()
@@ -485,16 +485,16 @@ labels()
 
 ASSERT_C(org_1,        "    mov A, 0x12 \n"
                        "org 6 \n"
-                       "    dbg \n",           0x02, 0x90, 0x12, 0x00, 0x00, 0x00, 0x01);
+                       "    dbg \n",           0x02, 0x90, 0x12, 0x00, 0x00, 0x00, 0x01)
 ASSERT_C(org_restore,  "    mov A, 0x12 \n"
                        "org 6 \n"
                        "    dbg \n"
                        "org restore \n"
-                       "    dbg",              0x02, 0x90, 0x12, 0x01, 0x00, 0x00, 0x01);
+                       "    dbg",              0x02, 0x90, 0x12, 0x01, 0x00, 0x00, 0x01)
 ASSERT_C(org_expr,     "DEF = 4 \n"
                        "    mov A, 0x12 \n"
                        "org DEF + 2 \n"
-                       "    dbg \n",           0x02, 0x90, 0x12, 0x00, 0x00, 0x00, 0x01);
+                       "    dbg \n",           0x02, 0x90, 0x12, 0x00, 0x00, 0x00, 0x01)
 ASSERT_C(org_multiple, "    mov A, 0x12 \n"
                        "org 12 \n"
                        "    dbg \n"
@@ -502,11 +502,11 @@ ASSERT_C(org_multiple, "    mov A, 0x12 \n"
                        "    iret \n"              
                        "org restore \n"
                        "    dbg",              0x02, 0x90, 0x12, 0x01, 0x00, 0x00, 0x73,
-                                               0x00, 0x00, 0x00, 0x00, 0x00, 0x01);
+                                               0x00, 0x00, 0x00, 0x00, 0x00, 0x01)
 ASSERT_C(org_dollar,   "org 0x4\n"
                        "msg: db \"Hello\"\n"
                        "test = $ - msg\n"
-                       "db test",              0x00, 0x00, 0x00, 0x00, 'H', 'e', 'l', 'l', 'o', 0x05);
+                       "db test",              0x00, 0x00, 0x00, 0x00, 'H', 'e', 'l', 'l', 'o', 0x05)
 
 static int
 org()
@@ -609,11 +609,11 @@ debugging()
 // {{{ other situation found on the wild
 
 ASSERT_C(undef_symbol_plus_one, "mov A, (xx + 1) \n"
-                                "xx = 1",           0x02, 0x90, 0x8b, 0x02, 0x00);
+                                "xx = 1",           0x02, 0x90, 0x8b, 0x02, 0x00)
 ASSERT_C(msglen,                "        mov A, (msglen + 1)\n"
                                 "org 7\n"
                                 "msg:    db \"abc\"\n"
-                                "msglen = $-msg",    0x02, 0x90, 0x8b, 0x04, 0x00, 0x00, 0x00, 'a', 'b', 'c');
+                                "msglen = $-msg",    0x02, 0x90, 0x8b, 0x04, 0x00, 0x00, 0x00, 'a', 'b', 'c')
 
 static int
 on_the_wild()
@@ -633,8 +633,8 @@ on_the_wild()
 
 // {{{ special operations
 
-ASSERT_EXEC(nop_op, "nop", cpu_PC() == 0x1);
-ASSERT_EXEC(dbg_op, "dbg", cpu_step_return == DEBUGGER_REQUESTED);
+ASSERT_EXEC(nop_op, "nop", cpu_PC() == 0x1)
+ASSERT_EXEC(dbg_op, "dbg", cpu_step_return == DEBUGGER_REQUESTED)
 
 static int special_ops()
 {
@@ -649,57 +649,54 @@ static int special_ops()
 
 // {{{ mov [origin]
 
-ASSERT_EXEC(literal_pos,  "mov B, 0x12",       cpu_PC() == 3 && cpu_B() == 0x12);
-ASSERT_EXEC(literal_neg,  "mov B, -3",         cpu_PC() == 3 && cpu_B() == 0xfffd);
-ASSERT_EXEC(next_v8,      "mov A, 0xF0",       cpu_PC() == 4 && cpu_A() == 0xf0);
-ASSERT_EXEC(next_v16,     "mov A, 0xF020",     cpu_PC() == 5 && cpu_A() == 0xf020);
+ASSERT_EXEC(literal_pos,  "mov B, 0x12",       cpu_PC() == 3 && cpu_B() == 0x12)
+ASSERT_EXEC(literal_neg,  "mov B, -3",         cpu_PC() == 3 && cpu_B() == 0xfffd)
+ASSERT_EXEC(next_v8,      "mov A, 0xF0",       cpu_PC() == 4 && cpu_A() == 0xf0)
+ASSERT_EXEC(next_v16,     "mov A, 0xF020",     cpu_PC() == 5 && cpu_A() == 0xf020)
 ASSERT_EXEC(next_v8_a,    "mov [0xF0], 0x64\n"
-                          "mov A, [0xF0]",     cpu_A() == 0x64);
+                          "mov A, [0xF0]",     cpu_A() == 0x64)
 ASSERT_EXEC(next_v8_ind,  "mov [0xF0], 0x64\n"
                           "mov [0xF1], 0x32\n"
                           "mov A, ^[0xF0]",    ram[0xF0] == 0x64 && ram[0xF1] == 0x32 &&
-                                               cpu_PC() == 13 && cpu_A() == 0x3264);
+                                               cpu_PC() == 13 && cpu_A() == 0x3264)
 ASSERT_EXEC(next_v16_a,   "mov [0x1F0], 0x64\n"
-                          "mov A, [0x1F0]",    cpu_A() == 0x64);
+                          "mov A, [0x1F0]",    cpu_A() == 0x64)
 ASSERT_EXEC(next_v16_ind, "mov [0x1F0], 0x64\n"
                           "mov [0x1F1], 0x32\n"
                           "mov A, ^[0x1F0]",   ram[0x1f0] == 0x64 && ram[0x1f1] == 0x32 &&
-                                               cpu_PC() == 16 && cpu_A() == 0x3264);
+                                               cpu_PC() == 16 && cpu_A() == 0x3264)
 ASSERT_EXEC(reg_a,        "mov [0x1F], 0x64\n"
                           "mov A, 0x1F\n"
                           "mov B, [A]",        ram[0x1f] == 0x64 && cpu_PC() == 11 &&
-                                               cpu_A() == 0x1f && cpu_B() == 0x64);
+                                               cpu_A() == 0x1f && cpu_B() == 0x64)
 ASSERT_EXEC(reg_ind,      "mov [0x1E], 0x64\n"
                           "mov [0x1F], 0x12\n"
                           "mov A, 0x1E\n"
                           "mov B, ^[A]",       ram[0x1e] == 0x64 && ram[0x1f] == 0x12 && cpu_PC() == 15 &&
-                                               cpu_A() == 0x1e && cpu_B() == 0x1264);
+                                               cpu_A() == 0x1e && cpu_B() == 0x1264)
 ASSERT_EXEC(reg_v8,       "mov [0x1E], 0x64\n"
                           "mov A, 0x10\n"
                           "mov B, [A + 0xE]",  ram[0x1e] == 0x64 && cpu_PC() == 12 &&
-                                               cpu_A() == 0x10 && cpu_B() == 0x64);
-ASSERT_EXEC(reg_v8_minus, "mov [0x1E], 0x64\n"
-                          "mov A, 0x20\n"
-                          "mov B, [A - 2]",    ram[0x1e] == 0x64 && cpu_PC() == 12 &&
-                                               cpu_A() == 0x20 && cpu_B() == 0x64);
+                                               cpu_A() == 0x10 && cpu_B() == 0x64)
 ASSERT_EXEC(reg_v8_addr,  "mov [0x1E], 0x34\n"
                           "mov [0x1F], 0x12\n"
                           "mov A, 0x10\n"
                           "mov B, ^[A + 0xE]", ram[0x1e] == 0x34 && ram[0x1f] == 0x12 && cpu_PC() == 15 &&
-                                               cpu_A() == 0x10 && cpu_B() == 0x1234);
+                                               cpu_A() == 0x10 && cpu_B() == 0x1234)
 ASSERT_EXEC(reg_v16,      "mov [0x11E], 0x64\n"
                           "mov A, 0x10\n"
                           "mov B, [A + 0x10E]", ram[0x11e] == 0x64 && cpu_PC() == 14 &&
-                                                cpu_A() == 0x10 && cpu_B() == 0x64);
-ASSERT_EXEC(reg_v16_minus, "mov [0x1E], 0x64\n"
-                           "mov A, 0x200\n"
-                           "mov B, [A - 0x1e2]", ram[0x1e] == 0x64 && cpu_PC() == 15 &&
-                                                 cpu_A() == 0x200 && cpu_B() == 0x64);
+                                                cpu_A() == 0x10 && cpu_B() == 0x64)
 ASSERT_EXEC(reg_v16_addr, "mov [0x11E], 0x64\n"
                           "mov [0x11F], 0x0F\n"
                           "mov A, 0x10\n"
                           "mov B, ^[A + 0x10E]", ram[0x11e] == 0x64 && ram[0x11f] == 0x0f && cpu_PC() == 19 &&
-                                                 cpu_A() == 0x10 && cpu_B() == 0xf64);
+                                                 cpu_A() == 0x10 && cpu_B() == 0xf64)
+ASSERT_EXEC(reg_v16_long, "mov [0xF11E], 0x64\n"
+                          "mov [0xF11F], 0x0F\n"
+                          "mov A, 0x10\n"
+                          "mov B, ^[A + 0xF10E]", ram[0xf11e] == 0x64 && ram[0xf11f] == 0x0f && cpu_PC() == 19 &&
+                                                 cpu_A() == 0x10 && cpu_B() == 0xf64)
 
 
 static int mov_origin()
@@ -716,11 +713,10 @@ static int mov_origin()
     verify(reg_a);
     verify(reg_ind);
     verify(reg_v8);
-    verify(reg_v8_minus);
     verify(reg_v8_addr);
     verify(reg_v16);
-    verify(reg_v16_minus);
     verify(reg_v16_addr);
+    verify(reg_v16_long);
     printf("\n");
     return 0;
 }
@@ -729,24 +725,24 @@ static int mov_origin()
 
 // {{{ mov [destination]
 
-ASSERT_EXEC(d_v8_addr,    "mov [0xF0], 0x64",      cpu_PC() == 5 && ram[0xF0] == 0x64);
+ASSERT_EXEC(d_v8_addr,    "mov [0xF0], 0x64",      cpu_PC() == 5 && ram[0xF0] == 0x64)
 ASSERT_EXEC(d_v8_addr2,   "mov [0xF0], 0x64\n"
-                          "mov [0xF1], 0x32",      cpu_PC() == 9 && ram[0xF0] == 0x64 && ram[0xF1] == 0x32);
-ASSERT_EXEC(d_v8_ind,     "mov ^[0xF0], 0x6412",   cpu_PC() == 6 && ram[0xF0] == 0x12 && ram[0xF1] == 0x64);
-ASSERT_EXEC(d_v16_addr,   "mov [0x1A0], 0x64",     cpu_PC() == 6 && ram[0x1A0] == 0x64);
-ASSERT_EXEC(d_v16_ind,    "mov ^[0x1A0], 0x6412",  cpu_PC() == 7 && ram[0x1A0] == 0x12 && ram[0x1A1] == 0x64);
+                          "mov [0xF1], 0x32",      cpu_PC() == 9 && ram[0xF0] == 0x64 && ram[0xF1] == 0x32)
+ASSERT_EXEC(d_v8_ind,     "mov ^[0xF0], 0x6412",   cpu_PC() == 6 && ram[0xF0] == 0x12 && ram[0xF1] == 0x64)
+ASSERT_EXEC(d_v16_addr,   "mov [0x1A0], 0x64",     cpu_PC() == 6 && ram[0x1A0] == 0x64)
+ASSERT_EXEC(d_v16_ind,    "mov ^[0x1A0], 0x6412",  cpu_PC() == 7 && ram[0x1A0] == 0x12 && ram[0x1A1] == 0x64)
 ASSERT_EXEC(d_reg_addr,   "mov A, 0x12\n"
-                          "mov [A], 0x64",         cpu_PC() == 7 && ram[0x12] == 0x64);
+                          "mov [A], 0x64",         cpu_PC() == 7 && ram[0x12] == 0x64)
 ASSERT_EXEC(d_reg_ind,    "mov A, 0x12\n"
-                          "mov ^[A], 0x648A",      cpu_PC() == 8 && ram[0x12] == 0x8a && ram[0x13] == 0x64);
+                          "mov ^[A], 0x648A",      cpu_PC() == 8 && ram[0x12] == 0x8a && ram[0x13] == 0x64)
 ASSERT_EXEC(d_reg_v8,     "mov A, 0x12\n"
-                          "mov [A + 0x20], 0x64",  cpu_PC() == 8 && ram[0x32] == 0x64);
+                          "mov [A + 0x20], 0x64",  cpu_PC() == 8 && ram[0x32] == 0x64)
 ASSERT_EXEC(d_reg_v8_ind, "mov A, 0x12\n"
-                          "mov ^[A + 0x20], 0x648A", cpu_PC() == 9 && ram[0x32] == 0x8a && ram[0x33] == 0x64);
+                          "mov ^[A + 0x20], 0x648A", cpu_PC() == 9 && ram[0x32] == 0x8a && ram[0x33] == 0x64)
 ASSERT_EXEC(d_reg_v16,    "mov A, 0x12\n"
-                          "mov [A + 0x120], 0x64",   cpu_PC() == 9 && ram[0x132] == 0x64);
+                          "mov [A + 0x120], 0x64",   cpu_PC() == 9 && ram[0x132] == 0x64)
 ASSERT_EXEC(d_reg_v16_ind, "mov A, 0x12\n"
-                           "mov ^[A + 0x120], 0x648A", cpu_PC() == 10 && ram[0x132] == 0x8a && ram[0x133] == 0x64);
+                           "mov ^[A + 0x120], 0x648A", cpu_PC() == 10 && ram[0x132] == 0x8a && ram[0x133] == 0x64)
 
 static int mov_dest()
 {
@@ -772,27 +768,27 @@ static int mov_dest()
 
 ASSERT_EXEC(logic_or,           "mov A, 0b1010\n"
                                 "mov B, 0b0100\n"
-                                "or  B, A",         cpu_B() == 0b1110);
+                                "or  B, A",         cpu_B() == 0b1110)
 ASSERT_EXEC(logic_and,          "mov A, 0b1010\n"
                                 "mov B, 0b0111\n"
-                                "and B, A",         cpu_B() == 0b10);
+                                "and B, A",         cpu_B() == 0b10)
 ASSERT_EXEC(logic_xor,          "mov A, 0b1010\n"
                                 "mov B, 0b0111\n"
-                                "xor B, A",         cpu_B() == 0b1101);
+                                "xor B, A",         cpu_B() == 0b1101)
 ASSERT_EXEC(logic_shl,          "mov B, 0b10101100\n"
                                 "mov A, 2\n"
-                                "shl B, A",         cpu_B() == 0b1010110000);
+                                "shl B, A",         cpu_B() == 0b1010110000)
 ASSERT_EXEC(logic_shl_8bit,     "mov [0x10], 0b10101100\n"
                                 "mov A, 2\n"
-                                "shl [0x10], A",    ram[0x10] == 0b10110000);
+                                "shl [0x10], A",    ram[0x10] == 0b10110000)
 ASSERT_EXEC(logic_shl_overflow, "mov B, 0xFFFF\n"
                                 "mov A, 4\n"
-                                "shl B, A",         cpu_B() == 0xfff0 && cpu_OV() == 0xf);
+                                "shl B, A",         cpu_B() == 0xfff0 && cpu_OV() == 0xf)
 ASSERT_EXEC(logic_shr,          "mov B, 0b10101100\n"
                                 "mov A, 2\n"
-                                "shr B, A",         cpu_B() == 0b00101011);
+                                "shr B, A",         cpu_B() == 0b00101011)
 ASSERT_EXEC(logic_not,          "mov A, 0b1100001110101100\n"
-                                "not A",            cpu_A() == 0b0011110001010011);
+                                "not A",            cpu_A() == 0b0011110001010011)
 
 static int logic()
 {
@@ -816,43 +812,43 @@ static int logic()
 
 ASSERT_EXEC(add_basic,    "mov A, 12\n"
                           "mov B, 13\n"
-                          "add A, B",    cpu_A() == 25);
+                          "add A, B",    cpu_A() == 25)
 ASSERT_EXEC(add_overflow, "mov A, 0xFFFE\n"
                           "mov B, 0x5\n"
-                          "add A, B",    cpu_A() == 3 && cpu_OV() == 1);
+                          "add A, B",    cpu_A() == 3 && cpu_OV() == 1)
 ASSERT_EXEC(add_unsigned, "mov A, 0x9000\n"
                           "mov B, 0x6000\n"
-                          "add A, B",    cpu_A() == 0xf000);
+                          "add A, B",    cpu_A() == 0xf000)
 ASSERT_EXEC(add_signed1,  "mov A, 40\n"
                           "mov B, -30\n"
-                          "add A, B",    cpu_A() == 10);
+                          "add A, B",    cpu_A() == 10)
 ASSERT_EXEC(add_signed2,  "mov A, -40\n"
                           "mov B, 30\n"
-                          "add A, B",    cpu_A() == 0x10000 - 10);
+                          "add A, B",    cpu_A() == 0x10000 - 10)
 ASSERT_EXEC(sub_unsigned, "mov A, 3\n"
                           "mov B, 5\n"
-                          "sub B, A",    cpu_B() == 2);
+                          "sub B, A",    cpu_B() == 2)
 ASSERT_EXEC(sub_signed,   "mov A, 5\n"
                           "mov B, 3\n"
-                          "sub B, A",    cpu_B() == 0x10000 - 2);
+                          "sub B, A",    cpu_B() == 0x10000 - 2)
 ASSERT_EXEC(sub_signed_8b,"mov A, 5\n"
                           "mov [0x10], 3\n"
-                          "sub [0x10], A", ram[0x10] = (0x100 - 2));
+                          "sub [0x10], A", ram[0x10] = (0x100 - 2))
 ASSERT_EXEC(mul,          "mov A, 0x123\n"
                           "mov B, 0xABCD\n"
-                          "mul B, A",    cpu_B() == 0x4a07 && cpu_OV() == 0xc3);
+                          "mul B, A",    cpu_B() == 0x4a07 && cpu_OV() == 0xc3)
 ASSERT_EXEC(mul_signed,   "mov A, 3\n"
                           "mov B, -4\n"
-                          "mul B, A",    cpu_B() == (0x10000 - 12));
+                          "mul B, A",    cpu_B() == (0x10000 - 12))
 ASSERT_EXEC(idiv,         "mov B, 50\n"
                           "mov A, 6\n"
-                          "div B, A",    cpu_B() == 8);
+                          "div B, A",    cpu_B() == 8)
 ASSERT_EXEC(idiv_signed,  "mov B, 50\n"
                           "mov A, -6\n"
-                          "div$ B, A",   cpu_B() == (0x10000 - 8));
+                          "div$ B, A",   cpu_B() == (0x10000 - 8))
 ASSERT_EXEC(mod,          "mov B, 50\n"
                           "mov A, 6\n"
-                          "mod B, A",    cpu_B() == 2);
+                          "mod B, A",    cpu_B() == 2)
 
 static int arithmetic()
 {
@@ -880,22 +876,22 @@ static int arithmetic()
 
 ASSERT_EXEC(ifne_not_equal, "mov  A, 12\n"
                             "ifne A, 13\n"
-                            "mov  B, 1",   cpu_B() == 1);
+                            "mov  B, 1",   cpu_B() == 1)
 ASSERT_EXEC(ifne_equal,     "mov  A, 12\n"
                             "ifne A, 12\n"
-                            "mov  B, 1",   cpu_B() == 0);
+                            "mov  B, 1",   cpu_B() == 0)
 ASSERT_EXEC(ifeq_not_equal, "mov  A, 12\n"
                             "ifeq A, 13\n"
-                            "mov  B, 1",   cpu_B() == 0);
+                            "mov  B, 1",   cpu_B() == 0)
 ASSERT_EXEC(ifeq_equal,     "mov  A, 12\n"
                             "ifeq A, 12\n"
-                            "mov  B, 1",   cpu_B() == 1);
+                            "mov  B, 1",   cpu_B() == 1)
 ASSERT_EXEC(ifgt,           "mov  A, 0xF000\n"
                             "ifgt A, 0x5000\n"
-                            "mov  B, 1",   cpu_B() == 1);
+                            "mov  B, 1",   cpu_B() == 1)
 ASSERT_EXEC(ifgt_signed,    "mov   A, 0xF000\n"
                             "ifgt$ A, 0x5000\n"
-                            "mov   B, 1",  cpu_B() == 0);
+                            "mov   B, 1",  cpu_B() == 0)
 
 static int skips()
 {
@@ -915,24 +911,24 @@ static int skips()
 // {{{ stack
 
 ASSERT_EXEC(pushb,    "mov   SP, 0xff\n"
-                      "pushb 24",        cpu_SP() == 0xfe && ram[0xff] == 24);
+                      "pushb 24",        cpu_SP() == 0xfe && ram[0xff] == 24)
 ASSERT_EXEC(pushw_8,  "mov   SP, 0xff\n"
-                      "pushw 24",        cpu_SP() == 0xfd && ram[0xfe] == 24 && ram[0xff] == 0);
+                      "pushw 24",        cpu_SP() == 0xfd && ram[0xfe] == 24 && ram[0xff] == 0)
 ASSERT_EXEC(pushw_16, "mov   SP, 0xff\n"
-                      "pushw 0x1234",    cpu_SP() == 0xfd && ram[0xfe] == 0x34 && ram[0xff] == 0x12);
+                      "pushw 0x1234",    cpu_SP() == 0xfd && ram[0xfe] == 0x34 && ram[0xff] == 0x12)
 ASSERT_EXEC(popb,     "mov   SP, 0xff\n"
                       "pushb 24\n"
-                      "popb  A",         cpu_SP() == 0xff && cpu_A() == 24);
+                      "popb  A",         cpu_SP() == 0xff && cpu_A() == 24)
 ASSERT_EXEC(popw,     "mov   SP, 0xff\n"
                       "pushw 0x1234\n"
-                      "popw  A",         cpu_SP() == 0xff && cpu_A() == 0x1234);
+                      "popw  A",         cpu_SP() == 0xff && cpu_A() == 0x1234)
 ASSERT_EXEC(pusha,    "mov   SP, 0xFF\n"
                       "mov   A, 0xF10\n"
                       "mov   B, 0xF20\n"
                       "pusha\n"
                       "mov   A, 0x111\n"
                       "mov   B, 0x222\n"
-                      "popa\n",          cpu_SP() == 0xff && cpu_A() == 0xF10 && cpu_B() == 0xF20);
+                      "popa\n",          cpu_SP() == 0xff && cpu_A() == 0xF10 && cpu_B() == 0xF20)
 
 static int stack()
 {
@@ -953,7 +949,7 @@ static int stack()
 
 ASSERT_EXEC(jmp_forward, "       jmp .next\n"
                          "       mov B, 2\n"
-                         ".next: mov A, 2\n", cpu_A() == 2 && cpu_B() == 0);
+                         ".next: mov A, 2\n", cpu_A() == 2 && cpu_B() == 0)
 ASSERT_EXEC(jmp_ret,     "    mov A, 0xF0\n"
                          "    jsr .next\n"
                          "    mov [A], 2\n"
@@ -964,7 +960,7 @@ ASSERT_EXEC(jmp_ret,     "    mov A, 0xF0\n"
                          "    add A, 1\n"
                          "    ret\n"
                          ".end:\n"
-                         "    mov [A], 3",   ram[0xf0] == 1 && ram[0xf1] == 2 && ram[0xf2] == 3);
+                         "    mov [A], 3",   ram[0xf0] == 1 && ram[0xf1] == 2 && ram[0xf2] == 3)
 
 static int jumps()
 {
@@ -1007,7 +1003,7 @@ ASSERT_EXEC(ivec_int, "    ivec 0x18, interrupt\n"
                       "    jmp done\n"
                       "interrupt:\n"
                       "    mov A, XT\n"
-                      "done:", cpu_A() == 0x1234 && cpu_B() == 0);
+                      "done:", cpu_A() == 0x1234 && cpu_B() == 0)
 ASSERT_EXEC(ienab,    "    ivec 0x18, .interrupt\n"
                       "    ienab 0\n"
                       "    int  0x18, 0x0\n"
@@ -1016,7 +1012,7 @@ ASSERT_EXEC(ienab,    "    ivec 0x18, .interrupt\n"
                       ".interrupt:\n"
                       "    mov A, 1\n"
                       "    iret\n"
-                      ".done:", cpu_A() == 0 && cpu_B() == 1);
+                      ".done:", cpu_A() == 0 && cpu_B() == 1)
 
 static int wait()
 {
@@ -1068,17 +1064,17 @@ ASSERT_EXEC(_memcpy, "mov  [0x30], 4\n"
                      "mov  F, 0x50\n"
                      "mov  Y, 3\n"
                      "dev  DEV_MEM_MGR, MEM_CPY",
-                     ram[0x50] == 4 && ram[0x51] == 3 && ram[0x52] == 2 && ram[0x53] == 0);
+                     ram[0x50] == 4 && ram[0x51] == 3 && ram[0x52] == 2 && ram[0x53] == 0)
 
 ASSERT_EXEC(_memset, "mov  X, 0x10\n"
                      "mov  Y, 3\n"
                      "mov  F, 'x'\n"
                      "dev  DEV_MEM_MGR, MEM_SET",
-                     ram[0x10] == 'x' && ram[0x11] == 'x' && ram[0x12] == 'x' && ram[0x14] != 'x');
+                     ram[0x10] == 'x' && ram[0x11] == 'x' && ram[0x12] == 'x' && ram[0x14] != 'x')
 
 ASSERT_EXEC(_random, "mov A, [CPU_RANDOM]\n"
                      "mov B, [CPU_RANDOM]\n"
-                     "mov C, [CPU_RANDOM]", cpu_A() != cpu_B() && cpu_B() != cpu_C());
+                     "mov C, [CPU_RANDOM]", cpu_A() != cpu_B() && cpu_B() != cpu_C())
 
 static int external()
 {

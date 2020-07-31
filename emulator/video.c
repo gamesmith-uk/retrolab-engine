@@ -1,4 +1,3 @@
-#include "../global.h"
 #include "video.h"
 
 #include <stdio.h>
@@ -49,7 +48,7 @@ load_font() {
     font = SDL_CreateTextureFromSurface(ren, sf);
     // SDL_SetTextureBlendMode(font, SDL_BLENDMODE_MOD);
     SDL_FreeSurface(sf);
-};
+}
 
 static void
 video_init_data()
@@ -60,22 +59,22 @@ video_init_data()
     ram[VIDEO_PALETTE + (n * 3) + 2] = color & 0xff;
 
     // palette - https://lospec.com/palette-list/sweetie-16
-    SET_COLOR(COLOR_BLACK,      0x1a1c2c);
-    SET_COLOR(COLOR_PURPLE,     0x5d275d);
-    SET_COLOR(COLOR_RED,        0xb13e53);
-    SET_COLOR(COLOR_ORANGE,     0xef7d57);
-    SET_COLOR(COLOR_YELLOW,     0xffcd75);
-    SET_COLOR(COLOR_LIME,       0xa7f070);
-    SET_COLOR(COLOR_GREEN,      0x38b764);
-    SET_COLOR(COLOR_TURQUOISE,  0x257179);
-    SET_COLOR(COLOR_DARK_BLUE,  0x29366f);
-    SET_COLOR(COLOR_BLUE,       0x3b5dc9);
-    SET_COLOR(COLOR_LIGHT_BLUE, 0x41a6f6);
-    SET_COLOR(COLOR_CYAN,       0x73eff7);
-    SET_COLOR(COLOR_WHITE,      0xf4f4f4);
-    SET_COLOR(COLOR_LIGHT_GRAY, 0x94b0c2);
-    SET_COLOR(COLOR_GRAY,       0x566c86);
-    SET_COLOR(COLOR_DARK_GRAY,  0x333c57);
+    SET_COLOR(COLOR_BLACK,      0x1a1c2c)
+    SET_COLOR(COLOR_PURPLE,     0x5d275d)
+    SET_COLOR(COLOR_RED,        0xb13e53)
+    SET_COLOR(COLOR_ORANGE,     0xef7d57)
+    SET_COLOR(COLOR_YELLOW,     0xffcd75)
+    SET_COLOR(COLOR_LIME,       0xa7f070)
+    SET_COLOR(COLOR_GREEN,      0x38b764)
+    SET_COLOR(COLOR_TURQUOISE,  0x257179)
+    SET_COLOR(COLOR_DARK_BLUE,  0x29366f)
+    SET_COLOR(COLOR_BLUE,       0x3b5dc9)
+    SET_COLOR(COLOR_LIGHT_BLUE, 0x41a6f6)
+    SET_COLOR(COLOR_CYAN,       0x73eff7)
+    SET_COLOR(COLOR_WHITE,      0xf4f4f4)
+    SET_COLOR(COLOR_LIGHT_GRAY, 0x94b0c2)
+    SET_COLOR(COLOR_GRAY,       0x566c86)
+    SET_COLOR(COLOR_DARK_GRAY,  0x333c57)
 
     // text color
     memset(&ram[VIDEO_TXT_COLOR], (COLOR_LIME << 4) | COLOR_BLACK, LINES * COLUMNS);
@@ -194,8 +193,6 @@ draw_text(CursorInfo* cursor)
 
     for (size_t i = 0; i < (COLUMNS * LINES); ++i) {
         char c = ram[VIDEO_TXT + i];
-        int line = i / COLUMNS;
-        int column = i % COLUMNS;
         int orig_x = (c / 16) * CHAR_W;
         int orig_y = (c % 16) * CHAR_H;
         int dest_x = (i % COLUMNS) * CHAR_W + (BORDER * 2);
@@ -262,26 +259,26 @@ video_dbg_json(char* buf, size_t bufsz)
 {
     int n = 0;
 #define PRINT(...) { n += snprintf(&buf[n], bufsz - n, __VA_ARGS__); }
-    PRINT("\"video\":{");
-    PRINT("\"palette\":[");
+    PRINT("\"video\":{")
+    PRINT("\"palette\":[")
     for(size_t i = 0; i < 16; ++i)
         PRINT("\"#%02X%02X%02X\"%s",
                 ram[VIDEO_PALETTE + (i * 3)], ram[VIDEO_PALETTE + (i * 3) + 1], ram[VIDEO_PALETTE + (i * 3) + 2],
-                (i != 15) ? "," : "");
-    PRINT("],");
-    PRINT("\"borderColor\":%d,", ram[VIDEO_BORDER] & 0xf);
-    PRINT("\"lineColor\":[");
+                (i != 15) ? "," : "")
+    PRINT("],")
+    PRINT("\"borderColor\":%d,", ram[VIDEO_BORDER] & 0xf)
+    PRINT("\"lineColor\":[")
     for(size_t i = 0; i < 30; ++i)
         PRINT("{\"bg\":%d,\"fg\":%d}%s",
                 ram[VIDEO_TXT_COLOR+i] >> 4,
                 ram[VIDEO_TXT_COLOR+i] & 0xf,
-                (i != 29) ? "," : "");
-    PRINT("],");
+                (i != 29) ? "," : "")
+    PRINT("],")
     PRINT("\"cursor\":{\"color\":%d,\"visible\":%s,\"position\":%d}",
             ram[VIDEO_CURSOR_INFO] & 0xf,
             ((ram[VIDEO_CURSOR_INFO] >> 4) & 1) ? "true" : "false",
-            ram[VIDEO_CURSOR_POS]);
-    PRINT("}");
+            ram[VIDEO_CURSOR_POS])
+    PRINT("}")
 #undef PRINT
     return n;
 }
