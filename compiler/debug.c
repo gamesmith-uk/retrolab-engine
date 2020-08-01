@@ -70,7 +70,7 @@ debug_find_pc(const DebuggingInfo* dbg, const char* filename, size_t line)
     size_t filenumber = 0;
     for (size_t i = 0; i < dbg->files_sz; ++i) {
         if (strcmp(dbg->files[i], filename) == 0) {
-            filenumber = 0;
+            filenumber = i;
             goto cont;
         }
     }

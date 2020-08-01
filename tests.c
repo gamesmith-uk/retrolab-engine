@@ -1142,10 +1142,34 @@ static int bkp()
     return 0;
 }
 
+static int bkp_other_file()
+{
+    emulator_init(true);
+
+    Input* input = input_new();
+    input_add_file(input, "main.s", "jmp test");
+    input_add_file(input, "board.s", "\nnop");
+    Output* output = compile_input(input);
+    size_t sz = output_binary_size(output);
+    const uint8_t* data = output_binary_data(output);
+    ram_load(0x0, data, sz);
+    cpu_load_debugging_info(output_debugging_info(output));
+
+    _assert(bkps_swap("main.s", 1) == 1);
+    _assert(bkps_swap("main.s", 2) == 0);
+    _assert(bkps_swap("board.s", 1) == 0);
+    _assert(bkps_swap("board.s", 2) == 1);
+
+    output_free(output);
+    emulator_destroy();
+    return 0;
+}
+
 static int breakpoints()
 {
     printf("Breakpoints:\n");
     verify(bkp);
+    verify(bkp_other_file);
     printf("\n");
     return 0;
 }
