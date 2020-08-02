@@ -260,7 +260,7 @@
   size: 1200
   comments:
     - character cell line color - 40 characters * 30 lines
-    - each byte = foreground / background color
+    - each byte = (foreground << 4) | background color
 - name: VIDEO_CURSOR_INFO
   size: 1
   comments:

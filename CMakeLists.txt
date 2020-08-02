@@ -42,10 +42,12 @@ add_custom_command(
 
 # build constants files
 add_custom_command(
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/constants/constants.yaml ${CMAKE_CURRENT_SOURCE_DIR}/constants/constants.py
         OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/mmap.h
         COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/constants && python3 ./constants.py --lang c > ${CMAKE_CURRENT_BINARY_DIR}/mmap.h
 )
 add_custom_command(
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/constants/constants.yaml ${CMAKE_CURRENT_SOURCE_DIR}/constants/constants.py
         OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def.h
         COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/constants && python3 ./constants.py --lang asm_c > ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def.h
 )
