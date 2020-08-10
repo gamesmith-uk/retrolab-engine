@@ -8,6 +8,9 @@ BLINK_LINE = VIDEO_TXT_COLOR + 2								; line color address for line 2
 				; place cursor at the end of sentence
 				mov			^[VIDEO_CURSOR_POS], msglen - 1	
 
+        ; special char
+        mov     [VIDEO_TXT + 25], 0x80
+
 				; setup blinking color text and timer
 				mov			[BLINK_LINE], BLINK_SHOW				; set line color
 				mov			[TIMER_FRAME_0], 30							; timer each 30 frames (500 ms)

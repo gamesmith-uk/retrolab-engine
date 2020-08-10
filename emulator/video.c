@@ -192,7 +192,7 @@ draw_text(CursorInfo* cursor)
     SDL_RenderSetScale(ren, zoom, zoom);
 
     for (size_t i = 0; i < (COLUMNS * LINES); ++i) {
-        char c = ram[VIDEO_TXT + i];
+        unsigned char c = ram[VIDEO_TXT + i];
         int orig_x = (c / 16) * CHAR_W;
         int orig_y = (c % 16) * CHAR_H;
         int dest_x = (i % COLUMNS) * CHAR_W + (BORDER * 2);
