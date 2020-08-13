@@ -8,9 +8,7 @@
 #include "global.h"
 #include "emulator/emulator.h"
 #include "emulator/video.h"
-#include "compiler/compiler.h"
-
-#include "emulator/memory.h"
+#include "emulator/cpu.h"
 
 #include "exec/exec.h"
 
@@ -39,6 +37,7 @@ show_help(const char* program_name)
     printf("   -c, --compile-file   Compile a source file and output the ROM file to stdout\n");
     printf("   -s, --source-file    Compile a source file and execute on the emulator\n");
     printf("   -d, --source-dir     Compile a project directory and execute on the emulator\n");
+    printf("   -D, --debug          Show debugging information for each CPU step\n");
     printf("   -h, --help           Show this help\n");
     printf("   -v, --version        Show version and exit\n");
     printf("Visit <" HOMEPAGE "> for a richer experience developing for this emulator.\n\n");
@@ -59,13 +58,14 @@ parse_args(int argc, char* argv[])
             { "compile-file", required_argument, 0, 'c' },
             { "source-file",  required_argument, 0, 's' },
             { "source-dir",   required_argument, 0, 'd' },
-            { "help",         required_argument, 0, 'h' },
-            { "version",      required_argument, 0, 'v' },
+            { "debug",        no_argument,       0, 'D' },
+            { "help",         no_argument,       0, 'h' },
+            { "version",      no_argument,       0, 'v' },
             { 0, 0, 0, 0 },
         };
 
         int opt_idx;
-        c = getopt_long(argc, argv, "r:c:s:d:hv", long_options, &opt_idx);
+        c = getopt_long(argc, argv, "r:c:s:d:Dhv", long_options, &opt_idx);
         if (c == -1)
             break;
         switch (c) {
@@ -82,6 +82,9 @@ parse_args(int argc, char* argv[])
             case 'd':
                 if (exec_compile_dir_to_ram(optarg) != 0)
                     exit(1);
+                break;
+            case 'D':
+                cpu_set_debugging_mode(true);
                 break;
             case 'h':
                 show_help(argv[0]);
