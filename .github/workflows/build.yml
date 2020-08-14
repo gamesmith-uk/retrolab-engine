@@ -18,8 +18,7 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          make -s retrolab-version
-          TAG_VERSION=${echo "${{ github.ref }}" | cut -d '/' -f 3}
+          TAG_VERSION=$(echo "${{ github.ref }}" | cut -d '/' -f 3)
           RETROLAB_VERSION=v$(make -s retrolab-version | head -n 1)
           echo "Tag version: $TAG_VERSION"
           echo "Retrolab version: $RETROLAB_VERSION"
