@@ -15,8 +15,6 @@ jobs:
           sudo apt-get install libsdl2-dev
       - name: Check version number
         run: |
-          cd emsdk
-          source ./emsdk_env.sh
           mkdir ../build
           cd ../build
           cmake ..
@@ -26,6 +24,8 @@ jobs:
           fi
       - name: Install emscripten
         run: |
+          cd emsdk
+          source ./emsdk_env.sh
           git clone https://github.com/emscripten-core/emsdk.git
           cd emsdk
           ./emsdk install latest
