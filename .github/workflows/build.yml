@@ -29,6 +29,7 @@ jobs:
           fi
       - name: Install emscripten
         run: |
+          mkdir emsdk
           cd emsdk
           source ./emsdk_env.sh
           git clone https://github.com/emscripten-core/emsdk.git
