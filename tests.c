@@ -849,6 +849,10 @@ ASSERT_EXEC(idiv_signed,  "mov B, 50\n"
 ASSERT_EXEC(mod,          "mov B, 50\n"
                           "mov A, 6\n"
                           "mod B, A",    cpu_B() == 2)
+ASSERT_EXEC(inc,          "mov A, 50\n"
+                          "inc A", cpu_A() == 51);
+ASSERT_EXEC(dec,          "mov A, 50\n"
+                          "dec A", cpu_A() == 49);
 
 static int arithmetic()
 {
@@ -866,6 +870,8 @@ static int arithmetic()
     verify(idiv);
     verify(idiv_signed);
     verify(mod);
+    verify(inc);
+    verify(dec);
     printf("\n");
     return 0;
 }
@@ -893,6 +899,27 @@ ASSERT_EXEC(ifgt_signed,    "mov   A, 0xF000\n"
                             "ifgt$ A, 0x5000\n"
                             "mov   B, 1",  cpu_B() == 0)
 
+static int if_skip()   // test if false ifs are skipped in a single CPU step
+{
+    emulator_init(true);
+    Output* output = compile_string("nop\n"
+                                    "ifne 1, 1\n"
+                                    "mov a, 10\n"
+                                    "nop");
+    size_t sz = output_binary_size(output);
+    const uint8_t* data = output_binary_data(output);
+    ram_load(0x0, data, sz);
+    _assert(cpu_PC() == 0);
+    cpu_step();  // nop
+    _assert(cpu_PC() == 1);  // ifne
+    cpu_step();
+    reg_t pc = cpu_PC();
+    _assert(pc == 7); // skip mov, go directly to nop
+    output_free(output);
+    emulator_destroy();
+    return 0;
+}
+
 static int skips()
 {
     printf("Skips:\n");
@@ -902,6 +929,7 @@ static int skips()
     verify(ifeq_equal);
     verify(ifgt);
     verify(ifgt_signed);
+    verify(if_skip);
     printf("\n");
     return 0;
 }
@@ -929,6 +957,8 @@ ASSERT_EXEC(pusha,    "mov   SP, 0xFF\n"
                       "mov   A, 0x111\n"
                       "mov   B, 0x222\n"
                       "popa\n",          cpu_SP() == 0xff && cpu_A() == 0xF10 && cpu_B() == 0xF20)
+ASSERT_EXEC(popn,     "mov   SP, 0xf0\n"
+                      "popn  3",         cpu_SP() == 0xf3);
 
 static int stack()
 {
@@ -939,6 +969,7 @@ static int stack()
     verify(popb);
     verify(popw);
     verify(pusha);
+    verify(popn);
     printf("\n");
     return 0;
 }

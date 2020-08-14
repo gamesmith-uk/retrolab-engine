@@ -176,6 +176,11 @@
   comments:
     - Initial position for stack (SP)
 
+- name: RESERVED_AREA
+  size: 5200
+  comment:
+    - This area is reserved for when video graphics are implemented
+
 ################# MEMORY MAP ###################
 
 #

@@ -42,9 +42,9 @@ void           yyerror(CompilationContext* cc, const char* fmt, ...);
 %token <number> T_NUMBER T_DBL_DOLLAR
 %token <byte>   T_A T_B T_C T_D T_E T_F T_I T_J T_K T_X T_Y T_XT T_SP T_FP T_PC T_OV
 
-%token <byte>   T_NOP T_DBG T_MOV T_OR T_AND T_XOR T_SHL T_SHR T_NOT T_ADD T_SUB T_MUL
+%token <byte>   T_NOP T_DBG T_MOV T_OR T_AND T_XOR T_SHL T_SHR T_NOT T_ADD T_SUB T_MUL T_INC T_DEC
 %token <byte>   T_DIV T_MOD T_IFNE T_IFEQ T_IFGT T_IFLT T_IFGE T_IFLE T_PUSHB T_PUSHW
-%token <byte>   T_PUSHA T_POPA
+%token <byte>   T_PUSHA T_POPA T_POPN
 %token <byte>   T_POPB T_POPW T_JMP T_JSR T_RET T_DEV T_IVEC T_INT T_IRET T_WAIT T_IENAB
 %token <byte>   T_ADDS T_SUBS T_MULS T_DIVS
 %token <byte>   T_IFGTS T_IFLTS T_IFGES T_IFLES T_PUSHBS T_PUSHWS
@@ -121,6 +121,8 @@ instruction: T_NOP   { BYTE(0x00); }
            | T_DIV   { BYTE(0x26); } dest_parameter ',' parameter
            | T_DIVS  { BYTE(0x27); } dest_parameter ',' parameter
            | T_MOD   { BYTE(0x29); } dest_parameter ',' parameter
+           | T_INC   { BYTE(0x2a); } dest_parameter
+           | T_DEC   { BYTE(0x2b); } dest_parameter
            | T_IFNE  { BYTE(0x30); } parameter ',' parameter
            | T_IFEQ  { BYTE(0x31); } parameter ',' parameter
            | T_IFGT  { BYTE(0x32); } parameter ',' parameter
@@ -137,6 +139,7 @@ instruction: T_NOP   { BYTE(0x00); }
            | T_POPW  { BYTE(0x53); } parameter
            | T_PUSHA { BYTE(0x54); }
            | T_POPA  { BYTE(0x55); }
+           | T_POPN  { BYTE(0x56); } parameter
            | T_JMP   { BYTE(0x60); } parameter  { if ($3) cc_replace_special_jmp(cc); }
            | T_JSR   { BYTE(0x61); } parameter
            | T_RET   { BYTE(0x62); }

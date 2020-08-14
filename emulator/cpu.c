@@ -65,6 +65,8 @@ static void memory_manager(uint16_t command)
         case MEM_SET:
             memset(&ram[X], F & 0xff, min(Y, 0xfff - Y + 1));
             break;
+        default:
+            break;
     }
 }
 
@@ -468,6 +470,14 @@ cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2
         else
             set_par(par1, par1->value % par2->value);
         break;
+    case 0x2a:  // INC
+        SET_OP_NAME("INC")
+        set_par_with_overflow(par1, par1->value + 1);
+        break;
+    case 0x2b:  // DEC
+        SET_OP_NAME("DEC")
+            set_par_with_overflow(par1, par1->value - 1);
+            break;
 
     case 0x30: // IFNE
         SET_OP_NAME("IFNE")
@@ -570,6 +580,10 @@ cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2
         B = POP16();
         A = POP16();
         break;
+    case 0x56: // POPN
+        SET_OP_NAME("POPN");
+        SP += par1->value;
+        break;
 #undef PUSH16
 #undef POP16
 
@@ -636,10 +650,10 @@ static const uint8_t n_parameters[256] = {
 //  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F      
     0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0 - special / mov
     2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 1 - logic
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0,  // 2 - arithmetic
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0,  // 2 - arithmetic
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0,  // 3 - skip
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 4
-    1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 5 - stack
+    1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 5 - stack
     1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 6 - jumps
     2, 2, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 7 - i/o
 };
@@ -669,7 +683,6 @@ cpu_step()
 
     // read next instruction
     uint8_t op = ram[PC++];
-    // printf("op 0x%02X: PC 0x%X\n", op, PC - 1);
 
     // deal with special jmp case
     if (op == 0x63) {
@@ -707,6 +720,8 @@ cpu_step()
     if (debugging_mode)
         cpu_print_debug(original_pc, op_str, &par1, &par2);
 #endif
+    if (skip_next)
+        cpu_step();
     return ret;
 }
 

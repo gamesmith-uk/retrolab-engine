@@ -49,6 +49,8 @@ identifier  \.?[a-z_][a-z0-9_]*
 "mul"       { return T_MUL; }
 "div"       { return T_DIV; }
 "mod"       { return T_MOD; }
+"inc"       { return T_INC; }
+"dec"       { return T_DEC; }
 "ifne"      { return T_IFNE; }
 "ifeq"      { return T_IFEQ; }
 "ifgt$"     { return T_IFGTS; }
@@ -69,6 +71,7 @@ identifier  \.?[a-z_][a-z0-9_]*
 "popw"      { return T_POPW; }
 "pusha"     { return T_PUSHA; }
 "popa"      { return T_POPA; }
+"popn"      { return T_POPN; }
 "jmp"       { return T_JMP; }
 "jsr"       { return T_JSR; }
 "ret"       { return T_RET; }
