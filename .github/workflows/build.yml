@@ -15,8 +15,8 @@ jobs:
           sudo apt-get install libsdl2-dev
       - name: Check version number
         run: |
-          mkdir ../build
-          cd ../build
+          mkdir build
+          cd build
           cmake ..
           if [ "${{ github.ref }}" != "v$(make -s retrolab-version | tail -n 1)" ]; then
             echo "Tag and retrolab versions are not the same"
