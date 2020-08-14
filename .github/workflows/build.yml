@@ -13,6 +13,17 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libsdl2-dev
+      - name: Check version number
+        run: |
+          cd emsdk
+          source ./emsdk_env.sh
+          mkdir ../build
+          cd ../build
+          cmake ..
+          if [ "${{ github.ref }}" != "v$(make -s retrolab-version | tail -n 1)" ]; then
+            echo "Tag and retrolab versions are not the same"
+            exit 1
+          fi
       - name: Install emscripten
         run: |
           git clone https://github.com/emscripten-core/emsdk.git
@@ -22,11 +33,7 @@ jobs:
       - name: Build WASM
         id: build_wasm
         run: |
-          cd emsdk
-          source ./emsdk_env.sh
-          mkdir ../build
-          cd ../build
-          cmake ..
+          cd build
           make wasm-release
           make retrolab-def
           zip retrolab-wasm.zip retrolab-*.wasm retrolab-*.js retrolab-*.def

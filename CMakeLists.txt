@@ -100,6 +100,10 @@ set(HEADERS
 # OUTPUTS
 #
 
+# version
+add_custom_target(retrolab-version
+        COMMAND echo ${PROJECT_VERSION})
+
 # retrolab.def
 add_custom_target(retrolab-def
         COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/constants && python3 ./constants.py --lang asm > ${CMAKE_CURRENT_BINARY_DIR}/retrolab-${CMAKE_PROJECT_VERSION}.def)
