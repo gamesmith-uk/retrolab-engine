@@ -150,9 +150,9 @@ inline static reg_t
 fetch_par(reg_t pc, Parameter* p)
 {
 #ifdef SUPPORT_DEBUG
-#  define IF_DEBUG() if (debugging_mode)
+#  define DEBUG_REG(...) { if (debugging_mode) snprintf(p->debug, sizeof p->debug, __VA_ARGS__); }
 #else
-#  define IF_DEBUG() if (0)
+#  define DEBUG_REG(...)
 #endif
     static const uint8_t NEXT_V8             = 0x8a,
                          NEXT_V16            = 0x8b,
@@ -178,107 +178,92 @@ fetch_par(reg_t pc, Parameter* p)
     if (b8 <= LITERAL_VALUE_POS_MAX) {
         p->type = DIRECT;
         p->value = b8;
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "0x%02X", p->value);
+        DEBUG_REG("0x%02X", p->value)
         return pc + 1;
     } else if (b8 <= LITERAL_VALUE_NEG_MAX) {
         p->type = DIRECT;
         p->value = (b8 & LITERAL_ABS_MASK) | 0xFF00 | ~LITERAL_ABS_MASK;  // only consider then first 6 bits, negate the rest
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "0x%02X", p->value);
+        DEBUG_REG("0x%02X", p->value)
         return pc + 1;
     } else if (b8 == NEXT_V8) {
         p->type = DIRECT;
         p->value = ram[pc+1];
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "0x%02X", p->value);
+        DEBUG_REG("0x%02X", p->value)
         return pc + 2;
     } else if (b8 == NEXT_V16) {
         p->type = DIRECT;
         p->value = ram[pc+1] | (ram[pc+2] << 8);
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "0x%04X", p->value);
+        DEBUG_REG("0x%04X", p->value)
         return pc + 3;
     } else if (b8 == ADDR_NEXT_V8) {
         p->type = INDIRECT;
         p->dest = ram[pc+1];
         p->value = ram[p->dest];
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "[0x%02X]", p->dest);
+        DEBUG_REG("[0x%02X]", p->dest)
         return pc + 2;
     } else if (b8 == ADDR_NEXT_V8_WORD) {
         p->type = INDIRECT_WORD;
         p->dest = ram[pc+1];
         p->value = ram[p->dest] | (ram[p->dest+1] << 8);
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "^[0x%02X]", p->dest);
+        DEBUG_REG("^[0x%02X]", p->dest)
         return pc + 2;
     } else if (b8 == ADDR_NEXT_V16) {
         p->type = INDIRECT;
         p->dest = ram[pc+1] | (ram[pc+2] << 8);
         p->value = ram[p->dest];
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "[0x%04X]", p->dest);
+        DEBUG_REG("[0x%04X]", p->dest)
         return pc + 3;
     } else if (b8 == ADDR_NEXT_V16_WORD) {
         p->type = INDIRECT_WORD;
         p->dest = ram[pc+1] | (ram[pc+2] << 8);
         p->value = ram[p->dest] | (ram[p->dest+1] << 8);
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "^[0x%04X]", p->dest);
+        DEBUG_REG("^[0x%04X]", p->dest)
         return pc + 3;
     } else if (b8 >= REG && b8 < (REG + NREGS)) {
         p->type = REGISTER;
         p->dest = b8 - REG;
         p->value = reg[b8 - REG];
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "%s", cpu_register_name(p->dest));
+        DEBUG_REG("%s", cpu_register_name(p->dest))
         return pc + 1;
     } else if (b8 >= ADDR_REG && b8 < (ADDR_REG + NREGS)) {
         p->type = INDIRECT;
         p->dest = reg[b8 - ADDR_REG];
         p->value = ram[p->dest];
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "[%s]", cpu_register_name(b8 - ADDR_REG));
+        DEBUG_REG("[%s]", cpu_register_name(b8 - ADDR_REG))
         return pc + 1;
     } else if (b8 >= ADDR_REG_WORD && b8 < (ADDR_REG_WORD + NREGS)) {
         p->type = INDIRECT_WORD;
         p->dest = reg[b8 - ADDR_REG_WORD];
         p->value = ram[p->dest] | (ram[p->dest+1] << 8);
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "[%s]", cpu_register_name(b8 - ADDR_REG_WORD));
+        DEBUG_REG("[%s]", cpu_register_name(b8 - ADDR_REG_WORD))
         return pc + 1;
     } else if (b8 >= ADDR_REG_V8 && b8 < (ADDR_REG_V8 + NREGS)) {
         p->type = INDIRECT;
         p->sum = (int8_t) ram[pc + 1];
         p->dest = reg[b8 - ADDR_REG_V8] + p->sum;
         p->value = ram[p->dest];
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "[%s + 0x%02X]", cpu_register_name(b8 - ADDR_REG_V8), (uint8_t) p->sum);
+        DEBUG_REG("[%s + 0x%02X]", cpu_register_name(b8 - ADDR_REG_V8), (uint8_t) p->sum)
         return pc + 2;
     } else if (b8 >= ADDR_REG_V8_WORD && b8 < (ADDR_REG_V8_WORD + NREGS)) {
         p->type = INDIRECT_WORD;
         p->sum = (int8_t) ram[pc + 1];
         p->dest = reg[b8 - ADDR_REG_V8_WORD] + p->sum;
         p->value = ram[p->dest] | (ram[p->dest+1] << 8);
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "^[%s + 0x%02X]", cpu_register_name(b8 - ADDR_REG_V8_WORD), (uint8_t) p->sum);
+        DEBUG_REG("^[%s + 0x%02X]", cpu_register_name(b8 - ADDR_REG_V8_WORD), (uint8_t) p->sum)
         return pc + 2;
     } else if (b8 >= ADDR_REG_V16 && b8 < (ADDR_REG_V16 + NREGS)) {
         p->type = INDIRECT;
         p->sum = ram[pc + 1] | (ram[pc + 2] << 8);
         p->dest = reg[b8 - ADDR_REG_V16] + p->sum;
         p->value = ram[p->dest];
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "[%s + 0x%04X]", cpu_register_name(b8 - ADDR_REG_V16), (uint16_t) p->sum);
+        DEBUG_REG("[%s + 0x%04X]", cpu_register_name(b8 - ADDR_REG_V16), (uint16_t) p->sum)
         return pc + 3;
     } else if (b8 >= ADDR_REG_V16_WORD && b8 < (ADDR_REG_V16_WORD + NREGS)) {
         p->type = INDIRECT_WORD;
         p->sum = ram[pc + 1] | (ram[pc + 2] << 8);
         p->dest = reg[b8 - ADDR_REG_V16_WORD] + p->sum;
         p->value = ram[p->dest] | (ram[p->dest+1] << 8);
-        IF_DEBUG()
-            snprintf(p->debug, sizeof p->debug, "^[%s + 0x%04X]", cpu_register_name(b8 - ADDR_REG_V16_WORD), (uint16_t) p->sum);
+        DEBUG_REG("^[%s + 0x%04X]", cpu_register_name(b8 - ADDR_REG_V16_WORD), (uint16_t) p->sum)
         return pc + 3;
     } else {
         abort();
@@ -391,7 +376,7 @@ cpu_set_hardware_fpointer(uint8_t hw, void(*fptr)(uint16_t data))
 // {{{ instruction execution
 
 static int
-cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2, char** op_name)
+cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2, __attribute__((unused)) char** op_name)
 {
 #ifdef SUPPORT_DEBUG
 #define SET_OP_NAME(op_str) {*op_name=(op_str);}
@@ -658,12 +643,12 @@ static const uint8_t n_parameters[256] = {
     2, 2, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 7 - i/o
 };
 
-static void cpu_print_debug(reg_t pc, char* op, Parameter* par1, Parameter* par2);
+static __attribute__((unused)) void cpu_print_debug(reg_t pc, char* op, Parameter* par1, Parameter* par2);
 
 int
 cpu_step()
 {
-    reg_t original_pc = PC;
+    __attribute__((unused)) reg_t original_pc = PC;
 
     // set random
     int r = rand();
@@ -815,6 +800,7 @@ found:
 static void
 cpu_disassemble_instruction(char* buf, int bufsz, char* op, Parameter *par1, Parameter *par2)
 {
+#if SUPPORT_DEBUG
     if (par1->type == NO_PARAMETER) {
         snprintf(buf, bufsz, "%s", op);
     } else if (par2->type == NO_PARAMETER) {
@@ -822,6 +808,9 @@ cpu_disassemble_instruction(char* buf, int bufsz, char* op, Parameter *par1, Par
     } else {
         snprintf(buf, bufsz, "%s %s, %s", op, par1->debug, par2->debug);
     }
+#else
+    (void) buf; (void) bufsz; (void) op; (void) par1; (void) par2;
+#endif
 }
 
 void
