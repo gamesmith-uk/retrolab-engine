@@ -124,7 +124,7 @@ create_input_from_string(Input* input)
         return strdup("");
     return r;
 }
- 
+
 static int
 sort_file_compare(const void* a, const void* b)
 {
@@ -135,9 +135,9 @@ sort_file_compare(const void* a, const void* b)
         return -1;
     else if (!sa_is_def && sb_is_def)
         return 1;
-    else if (strcmp(sa->filename, "main.s") == 0)
+    else if (strcmp(sa->filename, "main.s") == 0 || ends_with(sa->filename, "/main.s"))
         return -1;
-    else if (strcmp(sb->filename, "main.s") == 0)
+    else if (strcmp(sb->filename, "main.s") == 0 || ends_with(sb->filename, "/main.s"))
         return 1;
     return strcmp(sa->filename, sb->filename);
 }

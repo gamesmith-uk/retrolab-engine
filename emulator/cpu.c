@@ -9,8 +9,13 @@
 #include <stdio.h>
 #include <string.h>
 
+#if !__EMSCRIPTEN__
+#  define SUPPORT_DEBUG 1
+#endif
+
 static reg_t reg[16] = { 0 };
 static bool skip_next = false;
+static bool debugging_mode = false;
 
 static Interrupts ints = {
     .vector    = { NO_INTERRUPT },
@@ -60,6 +65,8 @@ static void memory_manager(uint16_t command)
         case MEM_SET:
             memset(&ram[X], F & 0xff, min(Y, 0xfff - Y + 1));
             break;
+        default:
+            break;
     }
 }
 
@@ -82,6 +89,7 @@ cpu_init()
     ram[CPU_VERSION_MINOR] = 1;
 
     SP = STACK_BOTTOM;
+    PC = 0;
 }
 
 void
@@ -125,7 +133,7 @@ cpu_register_name(uint8_t idx)
 // {{{ parameter parsing
 
 typedef enum {
-    DIRECT, INDIRECT, INDIRECT_WORD, REGISTER,
+    NO_PARAMETER, DIRECT, INDIRECT, INDIRECT_WORD, REGISTER,
 } ParameterType;
 
 typedef struct Parameter {
@@ -133,11 +141,19 @@ typedef struct Parameter {
     uint16_t      value;
     ParameterType type;
     int16_t       sum;
+#ifdef SUPPORT_DEBUG
+    char          debug[30];
+#endif
 } Parameter;
 
 inline static reg_t
 fetch_par(reg_t pc, Parameter* p)
 {
+#ifdef SUPPORT_DEBUG
+#  define IF_DEBUG() if (debugging_mode)
+#else
+#  define IF_DEBUG() if (0)
+#endif
     static const uint8_t NEXT_V8             = 0x8a,
                          NEXT_V16            = 0x8b,
                          ADDR_NEXT_V8        = 0x8c,
@@ -162,77 +178,107 @@ fetch_par(reg_t pc, Parameter* p)
     if (b8 <= LITERAL_VALUE_POS_MAX) {
         p->type = DIRECT;
         p->value = b8;
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "0x%02X", p->value);
         return pc + 1;
     } else if (b8 <= LITERAL_VALUE_NEG_MAX) {
         p->type = DIRECT;
         p->value = (b8 & LITERAL_ABS_MASK) | 0xFF00 | ~LITERAL_ABS_MASK;  // only consider then first 6 bits, negate the rest
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "0x%02X", p->value);
         return pc + 1;
     } else if (b8 == NEXT_V8) {
         p->type = DIRECT;
         p->value = ram[pc+1];
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "0x%02X", p->value);
         return pc + 2;
     } else if (b8 == NEXT_V16) {
         p->type = DIRECT;
         p->value = ram[pc+1] | (ram[pc+2] << 8);
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "0x%04X", p->value);
         return pc + 3;
     } else if (b8 == ADDR_NEXT_V8) {
         p->type = INDIRECT;
         p->dest = ram[pc+1];
         p->value = ram[p->dest];
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "[0x%02X]", p->dest);
         return pc + 2;
     } else if (b8 == ADDR_NEXT_V8_WORD) {
         p->type = INDIRECT_WORD;
         p->dest = ram[pc+1];
         p->value = ram[p->dest] | (ram[p->dest+1] << 8);
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "^[0x%02X]", p->dest);
         return pc + 2;
     } else if (b8 == ADDR_NEXT_V16) {
         p->type = INDIRECT;
         p->dest = ram[pc+1] | (ram[pc+2] << 8);
         p->value = ram[p->dest];
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "[0x%04X]", p->dest);
         return pc + 3;
     } else if (b8 == ADDR_NEXT_V16_WORD) {
         p->type = INDIRECT_WORD;
         p->dest = ram[pc+1] | (ram[pc+2] << 8);
         p->value = ram[p->dest] | (ram[p->dest+1] << 8);
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "^[0x%04X]", p->dest);
         return pc + 3;
     } else if (b8 >= REG && b8 < (REG + NREGS)) {
         p->type = REGISTER;
         p->dest = b8 - REG;
         p->value = reg[b8 - REG];
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "%s", cpu_register_name(p->dest));
         return pc + 1;
     } else if (b8 >= ADDR_REG && b8 < (ADDR_REG + NREGS)) {
         p->type = INDIRECT;
         p->dest = reg[b8 - ADDR_REG];
         p->value = ram[p->dest];
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "[%s]", cpu_register_name(b8 - ADDR_REG));
         return pc + 1;
     } else if (b8 >= ADDR_REG_WORD && b8 < (ADDR_REG_WORD + NREGS)) {
         p->type = INDIRECT_WORD;
         p->dest = reg[b8 - ADDR_REG_WORD];
         p->value = ram[p->dest] | (ram[p->dest+1] << 8);
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "[%s]", cpu_register_name(b8 - ADDR_REG_WORD));
         return pc + 1;
     } else if (b8 >= ADDR_REG_V8 && b8 < (ADDR_REG_V8 + NREGS)) {
         p->type = INDIRECT;
         p->sum = (int8_t) ram[pc + 1];
         p->dest = reg[b8 - ADDR_REG_V8] + p->sum;
         p->value = ram[p->dest];
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "[%s + 0x%02X]", cpu_register_name(b8 - ADDR_REG_V8), (uint8_t) p->sum);
         return pc + 2;
     } else if (b8 >= ADDR_REG_V8_WORD && b8 < (ADDR_REG_V8_WORD + NREGS)) {
         p->type = INDIRECT_WORD;
         p->sum = (int8_t) ram[pc + 1];
         p->dest = reg[b8 - ADDR_REG_V8_WORD] + p->sum;
         p->value = ram[p->dest] | (ram[p->dest+1] << 8);
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "^[%s + 0x%02X]", cpu_register_name(b8 - ADDR_REG_V8_WORD), (uint8_t) p->sum);
         return pc + 2;
     } else if (b8 >= ADDR_REG_V16 && b8 < (ADDR_REG_V16 + NREGS)) {
         p->type = INDIRECT;
         p->sum = ram[pc + 1] | (ram[pc + 2] << 8);
         p->dest = reg[b8 - ADDR_REG_V16] + p->sum;
         p->value = ram[p->dest];
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "[%s + 0x%04X]", cpu_register_name(b8 - ADDR_REG_V16), (uint16_t) p->sum);
         return pc + 3;
     } else if (b8 >= ADDR_REG_V16_WORD && b8 < (ADDR_REG_V16_WORD + NREGS)) {
         p->type = INDIRECT_WORD;
         p->sum = ram[pc + 1] | (ram[pc + 2] << 8);
         p->dest = reg[b8 - ADDR_REG_V16_WORD] + p->sum;
         p->value = ram[p->dest] | (ram[p->dest+1] << 8);
+        IF_DEBUG()
+            snprintf(p->debug, sizeof p->debug, "^[%s + 0x%04X]", cpu_register_name(b8 - ADDR_REG_V16_WORD), (uint16_t) p->sum);
         return pc + 3;
     } else {
         abort();
@@ -345,121 +391,165 @@ cpu_set_hardware_fpointer(uint8_t hw, void(*fptr)(uint16_t data))
 // {{{ instruction execution
 
 static int
-cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2)
+cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2, char** op_name)
 {
+#ifdef SUPPORT_DEBUG
+#define SET_OP_NAME(op_str) {*op_name=(op_str);}
+#else
+#define SET_OP_NAME(op_str)
+#endif
+
     // execute instruction
     switch (op) {
     case 0x0:  // NOP
+        SET_OP_NAME("NOP")
         break;
     case 0x1:  // DBG
+        SET_OP_NAME("DBG")
         return DEBUGGER_REQUESTED;
     case 0x2:  // MOV
+        SET_OP_NAME("MOV")
         set_par(par1, par2->value);
         break;
 
     case 0x10:  // OR
+        SET_OP_NAME("OR")
         set_par(par1, par1->value | par2->value);
         break;
     case 0x11:  // AND
+        SET_OP_NAME("AND")
         set_par(par1, par1->value & par2->value);
         break;
     case 0x12:  // XOR
+        SET_OP_NAME("XOR")
         set_par(par1, par1->value ^ par2->value);
         break;
     case 0x13:  // SHL
+        SET_OP_NAME("SHL")
         set_par_with_overflow(par1, ((uint32_t) par1->value) << par2->value);
         break;
     case 0x14:  // SHR
+        SET_OP_NAME("SHR")
         set_par(par1, par1->value >> par2->value);
         break;
     case 0x15:  // NOT
+        SET_OP_NAME("NOT")
         set_par(par1, ~par1->value);
         break;
 
     case 0x20:  // ADD
+        SET_OP_NAME("ADD")
         set_par_with_overflow(par1, par1->value + par2->value);
         break;
     case 0x22:  // SUB
+        SET_OP_NAME("SUB")
         set_par_with_overflow(par1, par1->value - par2->value);
         break;
     case 0x24:  // MUL
+        SET_OP_NAME("MUL")
         set_par_with_overflow(par1, par1->value * par2->value);
         break;
     case 0x26:  // DIV
+        SET_OP_NAME("DIV")
         if (par2->value == 0)
             cpu_interrupt(INT_CPU, XT_CPU_DIVZERO);
         else
             set_par(par1, par1->value / par2->value);
         break;
     case 0x27:  // DIV$
+        SET_OP_NAME("DIV$")
         if (par2->value == 0)
             cpu_interrupt(INT_CPU, XT_CPU_DIVZERO);
         else
             set_par(par1, par1->value / (int16_t)par2->value);
         break;
     case 0x29:  // MOD
+        SET_OP_NAME("MOD")
         if (par2->value == 0)
             cpu_interrupt(INT_CPU, XT_CPU_DIVZERO);
         else
             set_par(par1, par1->value % par2->value);
         break;
+    case 0x2a:  // INC
+        SET_OP_NAME("INC")
+        set_par_with_overflow(par1, par1->value + 1);
+        break;
+    case 0x2b:  // DEC
+        SET_OP_NAME("DEC")
+            set_par_with_overflow(par1, par1->value - 1);
+            break;
 
     case 0x30: // IFNE
-        if (!(par1->value != par2->value))
+        SET_OP_NAME("IFNE")
+        if (par1->value == par2->value)
             skip_next = true;
         break;
     case 0x31: // IFEQ
-        if (!(par1->value == par2->value))
+        SET_OP_NAME("IFEQ")
+        if (par1->value != par2->value)
             skip_next = true;
         break;
     case 0x32: // IFGT
-        if (!(par1->value > par2->value))
+        SET_OP_NAME("IFGT")
+        if (par1->value <= par2->value)
             skip_next = true;
         break;
     case 0x33: // IFGT$
-        if (!((int16_t)par1->value > (int16_t)par2->value))
+        SET_OP_NAME("IFGT$")
+        if ((int16_t) par1->value <= (int16_t) par2->value)
             skip_next = true;
         break;
     case 0x35: // IFLT
-        if (!(par1->value < par2->value))
+        SET_OP_NAME("IFLT")
+        if (par1->value >= par2->value)
             skip_next = true;
         break;
     case 0x36: // IFLT$
-        if (!((int16_t)par1->value < (int16_t)par2->value))
+        SET_OP_NAME("IFLT$")
+        if ((int16_t) par1->value >= (int16_t) par2->value)
             skip_next = true;
         break;
     case 0x38: // IFGE
-        if (!(par1->value >= par2->value))
+        SET_OP_NAME("IFGE")
+        if (par1->value < par2->value)
             skip_next = true;
         break;
     case 0x39: // IFGE$
-        if (!((int16_t)par1->value >= (int16_t)par2->value))
+        SET_OP_NAME("IFGE$")
+        if ((int16_t) par1->value < (int16_t) par2->value)
             skip_next = true;
         break;
     case 0x3C: // IFLE
-        if (!(par1->value <= par2->value))
+        SET_OP_NAME("IFLE")
+        if (par1->value > par2->value)
             skip_next = true;
         break;
     case 0x3D: // IFLE$
-        if (!((int16_t)par1->value <= (int16_t)par2->value))
+        SET_OP_NAME("IFLE$")
+        if ((int16_t) par1->value > (int16_t) par2->value)
             skip_next = true;
         break;
 
 #define PUSH16(n) { ram_set_bypass(SP--, ((n) >> 8) & 0xff); ram_set_bypass(SP--, (n) & 0xff); }
 #define POP16() (SP += 2, ram[SP-1] | (ram[SP] << 8))
     case 0x50: // PUSHB
+        SET_OP_NAME("PUSHB")
         ram_set_bypass(SP--, par1->value);
         break;
     case 0x51: // PUSHW
+        SET_OP_NAME("PUSHW")
         PUSH16(par1->value);
         break;
     case 0x52: // POPB
+        SET_OP_NAME("POPB")
         set_par(par1, ram[++SP]);
         break;
     case 0x53: // POPW
+        SET_OP_NAME("POP16")
         set_par(par1, POP16());
         break;
     case 0x54: // PUSHA
+        SET_OP_NAME("PUSHA")
         PUSH16(A);
         PUSH16(B);
         PUSH16(C);
@@ -475,6 +565,7 @@ cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2
         PUSH16(OV);
         break;
     case 0x55: // POPA
+        SET_OP_NAME("POPA")
         OV = POP16();
         FP = POP16();
         Y = POP16();
@@ -489,40 +580,55 @@ cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2
         B = POP16();
         A = POP16();
         break;
+    case 0x56: // POPN
+        SET_OP_NAME("POPN");
+        SP += par1->value;
+        break;
+#undef PUSH16
+#undef POP16
 
     case 0x60: // JMP
+        SET_OP_NAME("JMP")
         PC = par1->value;
         break;
     case 0x61: // JSR
+        SET_OP_NAME("JSR")
         ram_set_bypass(SP--, PC >> 8);  // push next instruction PC onto stack
         ram_set_bypass(SP--, PC & 0xff);
         PC = par1->value;
         break;
     case 0x62: // RET
+        SET_OP_NAME("RET")
         PC = ram[++SP];
         PC |= ram[++SP] << 8;
         break;
 
     case 0x70: // DEV
+        SET_OP_NAME("DEV")
         if (hw_fptr[par1->value & 0xff])
             hw_fptr[par1->value & 0xff](par2->value & 0xffff);
         break;
     case 0x71: // IVEC
+        SET_OP_NAME("IVEC")
         ints.vector[par1->value & 0xff] = par2->value;
         break;
     case 0x72: // INT
+        SET_OP_NAME("INT")
         cpu_interrupt(par1->value & 0xff, par2->value);
         break;
     case 0x73: // IRET
+        SET_OP_NAME("IRET")
         if (ints.happening)
             leave_interrupt();
         else
             cpu_interrupt(INT_CPU, XT_CPU_IRET);
         break;
     case 0x74: // WAIT
+        SET_OP_NAME("WAIT")
         ints.waiting = true;
         break;
     case 0x75: // IENAB
+        SET_OP_NAME("IENAB")
         ints.active = par1->value & 1;
         break;
 
@@ -533,6 +639,7 @@ cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2
         return -ram[PC];  // invalid operation
     }
     return PC;
+#undef SET_OP_NAME
 }
 
 // }}}
@@ -543,17 +650,21 @@ static const uint8_t n_parameters[256] = {
 //  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F      
     0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0 - special / mov
     2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 1 - logic
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0,  // 2 - arithmetic
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0,  // 2 - arithmetic
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0,  // 3 - skip
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 4
-    1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 5 - stack
+    1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 5 - stack
     1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 6 - jumps
     2, 2, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 7 - i/o
 };
 
+static void cpu_print_debug(reg_t pc, char* op, Parameter* par1, Parameter* par2);
+
 int
 cpu_step()
 {
+    reg_t original_pc = PC;
+
     // set random
     int r = rand();
     ram[CPU_RANDOM] = r & 0xff;
@@ -572,7 +683,6 @@ cpu_step()
 
     // read next instruction
     uint8_t op = ram[PC++];
-    // printf("op 0x%02X: PC 0x%X\n", op, PC - 1);
 
     // deal with special jmp case
     if (op == 0x63) {
@@ -604,7 +714,15 @@ cpu_step()
         return PC;
     }
 
-    return cpu_execute_instruction(op, &par1,& par2);
+    char* op_str = NULL;
+    int ret = cpu_execute_instruction(op, &par1, &par2, &op_str);
+#if !__EMSCRIPTEN__
+    if (debugging_mode)
+        cpu_print_debug(original_pc, op_str, &par1, &par2);
+#endif
+    if (skip_next)
+        cpu_step();
+    return ret;
 }
 
 long
@@ -626,6 +744,12 @@ cpu_break_next()
 // }}}
 
 // {{{ debugging info
+
+void
+cpu_set_debugging_mode(bool v)
+{
+    debugging_mode = v;
+}
 
 void
 cpu_load_debugging_info(const DebuggingInfo* ndbg)
@@ -686,6 +810,33 @@ found:
     PRINT("}");
 #undef PRINT
     return n;
+}
+
+static void
+cpu_disassemble_instruction(char* buf, int bufsz, char* op, Parameter *par1, Parameter *par2)
+{
+    if (par1->type == NO_PARAMETER) {
+        snprintf(buf, bufsz, "%s", op);
+    } else if (par2->type == NO_PARAMETER) {
+        snprintf(buf, bufsz, "%s %s", op, par1->debug);
+    } else {
+        snprintf(buf, bufsz, "%s %s, %s", op, par1->debug, par2->debug);
+    }
+}
+
+void
+cpu_print_debug(reg_t pc, char* op, Parameter* par1, Parameter* par2)
+{
+    char buf[50];
+    cpu_disassemble_instruction(buf, 50, op, par1, par2);
+    printf("Executed: (PC = 0x%0X): %s\n", pc, buf);
+    printf("A: 0x%04X   E: 0x%04X    K: 0x%04X   SP: 0x%04X\n", A, E, K, SP);
+    printf("B: 0x%04X   F: 0x%04X    X: 0x%04X   FP: 0x%04X\n", B, F, X, FP);
+    printf("C: 0x%04X   I: 0x%04X    Y: 0x%04X   PC: 0x%04X\n", C, I, Y, PC);
+    printf("D: 0x%04X   J: 0x%04X   XT: 0x%04X   OV: 0x%04X\n", D, J, XT, OV);
+    printf("Stack: %02X %02X %02X %02X %02X %02X %02X %02X\n",
+        ram[SP+1], ram[SP+2], ram[SP+3], ram[SP+4], ram[SP+5], ram[SP+6], ram[SP+7], ram[SP+8]);
+    printf("--------------------------------------------------------\n");
 }
 
 // }}}

@@ -22,6 +22,7 @@ bool        cpu_waiting_for_interrupt();
 const char* cpu_register_name(uint8_t idx);
 reg_t       cpu_register(uint8_t idx);
 
+void        cpu_set_debugging_mode(bool v);
 void        cpu_load_debugging_info(const DebuggingInfo* dbg);
 int         cpu_dbg_json(char* buf, size_t bufsz);
 
