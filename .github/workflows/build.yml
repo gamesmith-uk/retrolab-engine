@@ -18,7 +18,11 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          if [ "${{ github.ref }}" != "v$(make -s retrolab-version | tail -n 1)" ]; then
+          TAG_VERSION=${{ github.ref }}
+          RETROLAB_VERSION=v$(make -s retrolab-version | tail -n 1)
+          echo "Tag version: $TAG_VERSION"
+          echo "Retrolab version: $RETROLAB_VERSION"
+          if [ "$TAG_VERSION" != "$RETROLAB_VERSION" ]; then
             echo "Tag and retrolab versions are not the same."
             exit 1
           fi
