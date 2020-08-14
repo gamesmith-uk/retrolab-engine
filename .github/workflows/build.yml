@@ -29,9 +29,6 @@ jobs:
           fi
       - name: Install emscripten
         run: |
-          mkdir emsdk
-          cd emsdk
-          source ./emsdk_env.sh
           git clone https://github.com/emscripten-core/emsdk.git
           cd emsdk
           ./emsdk install latest
@@ -39,7 +36,9 @@ jobs:
       - name: Build WASM
         id: build_wasm
         run: |
-          cd build
+          cd emsdk
+          source ./emsdk_env.sh
+          cd ../build
           make wasm-release
           make retrolab-def
           zip retrolab-wasm.zip retrolab-*.wasm retrolab-*.js retrolab-*.def
