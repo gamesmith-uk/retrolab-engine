@@ -19,7 +19,7 @@ jobs:
           cd build
           cmake ..
           if [ "${{ github.ref }}" != "v$(make -s retrolab-version | tail -n 1)" ]; then
-            echo "Tag and retrolab versions are not the same"
+            echo "Tag and retrolab versions are not the same."
             exit 1
           fi
       - name: Install emscripten
