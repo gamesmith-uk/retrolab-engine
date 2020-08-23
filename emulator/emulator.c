@@ -37,7 +37,7 @@ CpuError
 emulator_step()
 {
     end_of_frame = false;
-    CpuError err = cpu_step();
+    cpu_step();
     --steps_left;
 
     // is it the end of frame?
@@ -53,7 +53,7 @@ emulator_step()
         if (breakpoint_hit_fptr && break_at_end_of_frame) {
             breakpoint_hit_fptr();
             break_at_end_of_frame = false;
-            return err;
+            return cpu_error();
         }
     }    
     
@@ -63,7 +63,7 @@ emulator_step()
         end_of_frame = true;
     }
 
-    return err;
+    return cpu_error();
 }
 
 CpuError

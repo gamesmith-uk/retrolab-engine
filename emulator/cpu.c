@@ -620,8 +620,9 @@ cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2
         break;
 
     default:
+        --PC;
 #if !TESTING
-        fprintf(stderr, "Invalid CPU operation 0x%02X in PC 0x%X.\n", op, PC-1);
+        fprintf(stderr, "Invalid CPU operation 0x%02X in PC 0x%X.\n", op, PC);
 #endif
         _cpu_error = CPU_ERROR_INVALID_OPCODE;
         return PC;
@@ -768,7 +769,7 @@ cpu_dbg_json(char* buf, size_t bufsz)
     switch (_cpu_error) { // NOLINT(hicpp-multiway-paths-covered)
         case CPU_ERROR_NO_ERROR: break;
         case CPU_ERROR_INVALID_OPCODE:
-        PRINT("\"error\":\"Invalid opcode 0x%02X in address 0x%04X.\",", ram[PC-1], PC-1)
+        PRINT("\"error\":\"Invalid opcode 0x%02X in address 0x%04X.\",", ram[PC], PC)
             break;
     }
 
