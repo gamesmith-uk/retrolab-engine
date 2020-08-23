@@ -850,9 +850,9 @@ ASSERT_EXEC(mod,          "mov B, 50\n"
                           "mov A, 6\n"
                           "mod B, A",    cpu_B() == 2)
 ASSERT_EXEC(inc,          "mov A, 50\n"
-                          "inc A", cpu_A() == 51);
+                          "inc A", cpu_A() == 51)
 ASSERT_EXEC(dec,          "mov A, 50\n"
-                          "dec A", cpu_A() == 49);
+                          "dec A", cpu_A() == 49)
 
 static int arithmetic()
 {
@@ -958,7 +958,7 @@ ASSERT_EXEC(pusha,    "mov   SP, 0xFF\n"
                       "mov   B, 0x222\n"
                       "popa\n",          cpu_SP() == 0xff && cpu_A() == 0xF10 && cpu_B() == 0xF20)
 ASSERT_EXEC(popn,     "mov   SP, 0xf0\n"
-                      "popn  3",         cpu_SP() == 0xf3);
+                      "popn  3",         cpu_SP() == 0xf3)
 
 static int stack()
 {

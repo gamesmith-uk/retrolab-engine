@@ -3,11 +3,7 @@
 #define _GNU_SOURCE
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-#include "../global.h"
-#include "mmap.h"
 #include "breakpoints.h"
 #include "cpu.h"
 #include "joystick.h"
@@ -139,20 +135,20 @@ emulator_dbg_json(size_t memory_block, char* buf, size_t bufsz)
 {
 #define PRINT(...) { n += snprintf(&buf[n], bufsz - n, __VA_ARGS__); }
     int n = 0;
-    PRINT("{");
+    PRINT("{")
     n += cpu_dbg_json(&buf[n], bufsz - n);
-    PRINT(",");
+    PRINT(",")
     n += ram_dbg_json(memory_block, &buf[n], bufsz - n);
-    PRINT(",");
+    PRINT(",")
     n += timer_dbg_json(&buf[n], bufsz - n);
-    PRINT(",");
+    PRINT(",")
     n += video_dbg_json(&buf[n], bufsz - n);
-    PRINT(",");
+    PRINT(",")
     n += joystick_dbg_json(&buf[n], bufsz - n);
-    PRINT(",");
+    PRINT(",")
     n += bkps_dbg_json(&buf[n], bufsz - n);
-    PRINT(",\"archVersion\":\"" VERSION "\"");
-    PRINT("}");
+    PRINT(",\"archVersion\":\"" VERSION "\"")
+    PRINT("}")
     return (long) n > (long) bufsz;  // return -1 if allocated string is not big enough
 #undef PRINT
 }

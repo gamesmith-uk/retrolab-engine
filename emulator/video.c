@@ -39,7 +39,7 @@ typedef struct CursorInfo {
 
 static void
 load_font() {
-    SDL_RWops* io = SDL_RWFromConstMem(font_bmp, font_bmp_len);
+    SDL_RWops* io = SDL_RWFromConstMem(font_bmp, (int) font_bmp_len);
     SDL_Surface* sf = SDL_LoadBMP_RW(io, 1);
     if (!sf) {
         fprintf(stderr, "SDL_LoadBMP_RW: %s\n", SDL_GetError());
@@ -88,8 +88,8 @@ video_init()
     window = SDL_CreateWindow(
         "retrolab",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        (SCREEN_W + (BORDER * 2)) * 2 * zoom,
-        (SCREEN_H + (BORDER * 2)) * 2 * zoom,
+        (int) ((SCREEN_W + (BORDER * 2)) * 2 * zoom),
+        (int) ((SCREEN_H + (BORDER * 2)) * 2 * zoom),
         SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
     ren = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     load_font();
@@ -163,7 +163,7 @@ draw_border()
     uint8_t border_color_idx = ram[VIDEO_BORDER] & 0xf;
     SDL_Color border = palette_color(border_color_idx);
 
-    SDL_RenderSetScale(ren, zoom * 2, zoom * 2);
+    SDL_RenderSetScale(ren, (float) zoom * 2, (float) zoom * 2);
 
     SDL_SetRenderDrawColor(ren, border.r, border.g, border.b, border.a);
     SDL_RenderClear(ren);
@@ -172,13 +172,13 @@ draw_border()
 static void
 draw_background()
 {
-    SDL_RenderSetScale(ren, zoom, zoom);
+    SDL_RenderSetScale(ren, (float) zoom, (float) zoom);
     for (size_t i = 0; i < LINES * COLUMNS; ++i) {
         SDL_Color bg = palette_color(ram[VIDEO_TXT_COLOR + i] & 0xf);
         SDL_SetRenderDrawColor(ren, bg.r, bg.g, bg.b, bg.a);
         SDL_Rect r = { 
-            .x = (BORDER * 2) + (i % CHAR_W),
-            .y = (BORDER * 2) + (i / CHAR_W),
+            .x = (int) ((BORDER * 2) + (i % CHAR_W)),
+            .y = (int) ((BORDER * 2) + (i / CHAR_W)),
             .w = CHAR_W,
             .h = CHAR_H
         };
@@ -189,14 +189,14 @@ draw_background()
 static void
 draw_text(CursorInfo* cursor)
 {
-    SDL_RenderSetScale(ren, zoom, zoom);
+    SDL_RenderSetScale(ren, (float) zoom, (float) zoom);
 
     for (size_t i = 0; i < (COLUMNS * LINES); ++i) {
         unsigned char c = ram[VIDEO_TXT + i];
         int orig_x = (c / 16) * CHAR_W;
         int orig_y = (c % 16) * CHAR_H;
-        int dest_x = (i % COLUMNS) * CHAR_W + (BORDER * 2);
-        int dest_y = (i / COLUMNS) * CHAR_H + (BORDER * 2);
+        int dest_x = (int) (i % COLUMNS) * CHAR_W + (BORDER * 2);
+        int dest_y = (int) (i / COLUMNS) * CHAR_H + (BORDER * 2);
 
         // if cursor is here
         if (cursor->cursor->visible && cursor->pos == i) {

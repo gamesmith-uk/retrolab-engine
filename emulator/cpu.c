@@ -239,14 +239,14 @@ fetch_par(reg_t pc, Parameter* p)
         return pc + 1;
     } else if (b8 >= ADDR_REG_V8 && b8 < (ADDR_REG_V8 + NREGS)) {
         p->type = INDIRECT;
-        p->sum = (int8_t) ram[pc + 1];
+        p->sum = ram[pc + 1];
         p->dest = reg[b8 - ADDR_REG_V8] + p->sum;
         p->value = ram[p->dest];
         DEBUG_REG("[%s + 0x%02X]", cpu_register_name(b8 - ADDR_REG_V8), (uint8_t) p->sum)
         return pc + 2;
     } else if (b8 >= ADDR_REG_V8_WORD && b8 < (ADDR_REG_V8_WORD + NREGS)) {
         p->type = INDIRECT_WORD;
-        p->sum = (int8_t) ram[pc + 1];
+        p->sum = ram[pc + 1];
         p->dest = reg[b8 - ADDR_REG_V8_WORD] + p->sum;
         p->value = ram[p->dest] | (ram[p->dest+1] << 8);
         DEBUG_REG("^[%s + 0x%02X]", cpu_register_name(b8 - ADDR_REG_V8_WORD), (uint8_t) p->sum)
@@ -326,7 +326,7 @@ cpu_interrupt(uint8_t number, uint16_t xt_value)
     }
 }
 
-bool
+__attribute__((unused)) bool
 cpu_waiting_for_interrupt()
 {
     return ints.waiting;
@@ -366,7 +366,7 @@ leave_interrupt()
 // {{{ external hardware
 
 void
-cpu_set_hardware_fpointer(uint8_t hw, void(*fptr)(uint16_t data))
+cpu_set_hardware_fpointer(uint8_t hw, void(*fptr)(__attribute__((unused)) uint16_t data))
 {
     hw_fptr[hw] = fptr;
 }
@@ -523,7 +523,7 @@ cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2
         break;
     case 0x51: // PUSHW
         SET_OP_NAME("PUSHW")
-        PUSH16(par1->value);
+        PUSH16(par1->value)
         break;
     case 0x52: // POPB
         SET_OP_NAME("POPB")
@@ -535,19 +535,19 @@ cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2
         break;
     case 0x54: // PUSHA
         SET_OP_NAME("PUSHA")
-        PUSH16(A);
-        PUSH16(B);
-        PUSH16(C);
-        PUSH16(D);
-        PUSH16(E);
-        PUSH16(F);
-        PUSH16(I);
-        PUSH16(J);
-        PUSH16(K);
-        PUSH16(X);
-        PUSH16(Y);
-        PUSH16(FP);
-        PUSH16(OV);
+        PUSH16(A)
+        PUSH16(B)
+        PUSH16(C)
+        PUSH16(D)
+        PUSH16(E)
+        PUSH16(F)
+        PUSH16(I)
+        PUSH16(J)
+        PUSH16(K)
+        PUSH16(X)
+        PUSH16(Y)
+        PUSH16(FP)
+        PUSH16(OV)
         break;
     case 0x55: // POPA
         SET_OP_NAME("POPA")
@@ -566,7 +566,7 @@ cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2
         A = POP16();
         break;
     case 0x56: // POPN
-        SET_OP_NAME("POPN");
+        SET_OP_NAME("POPN")
         SP += par1->value;
         break;
 #undef PUSH16
@@ -651,7 +651,7 @@ cpu_step()
     __attribute__((unused)) reg_t original_pc = PC;
 
     // set random
-    int r = rand();
+    int r = rand();   // NOLINT
     ram[CPU_RANDOM] = r & 0xff;
     ram[CPU_RANDOM+1] = (r >> 8) & 0xff;
 
@@ -720,7 +720,7 @@ cpu_addr_from_source(const char* filename, size_t line)
 
 // {{{ breakpoints
 
-void
+__attribute__((unused)) void
 cpu_break_next()
 {
     break_next = true;
@@ -748,51 +748,51 @@ cpu_dbg_json(char* buf, size_t bufsz)
     int n = 0;
 #define PRINT(...) { n += snprintf(&buf[n], bufsz - n, __VA_ARGS__); }
 
-    PRINT("\"cpu\":{");
-    PRINT("\"version\":[%d,%d],", ram[CPU_VERSION_MAJOR], ram[CPU_VERSION_MINOR]);
-    PRINT("\"random\":%d,", ram_get16(CPU_RANDOM));
-    PRINT("\"pc\":%d,", cpu_PC());
+    PRINT("\"cpu\":{")
+    PRINT("\"version\":[%d,%d],", ram[CPU_VERSION_MAJOR], ram[CPU_VERSION_MINOR])
+    PRINT("\"random\":%d,", ram_get16(CPU_RANDOM))
+    PRINT("\"pc\":%d,", cpu_PC())
 
     // current source location
     if (dbg) {
         for (size_t i = 0; i < dbg->locations_sz; ++i) {
             if (cpu_PC() == dbg->locations[i].pc) {
                 PRINT("\"currentSourceLocation\":{\"filename\":\"%s\",\"lineNumber\":%zu},",
-                        dbg->files[dbg->locations[i].file_number], dbg->locations[i].line);
+                        dbg->files[dbg->locations[i].file_number], dbg->locations[i].line)
                 goto found;
             }
         }
     }
-    PRINT("\"currentSourceLocation\":{\"filename\":\"\",\"lineNumber\":-1},");
+    PRINT("\"currentSourceLocation\":{\"filename\":\"\",\"lineNumber\":-1},")
 found:
     
     // registers
-    PRINT("\"registers\":[");
+    PRINT("\"registers\":[")
     for (int i = 0; i < 16; ++i)
-        PRINT("{\"name\":\"%s\",\"value\":%d}%s", cpu_register_name(i), cpu_register(i), (i != 15) ? "," : "");
-    PRINT("],");
+        PRINT("{\"name\":\"%s\",\"value\":%d}%s", cpu_register_name(i), cpu_register(i), (i != 15) ? "," : "")
+    PRINT("],")
     
     // interrupts
     int comma = 0;
-    PRINT("\"waitingForInterrupt\":%s,", ints.waiting? "true" : "false");
-    PRINT("\"interrupts\":{");
-    PRINT("\"vector\":{");
+    PRINT("\"waitingForInterrupt\":%s,", ints.waiting? "true" : "false")
+    PRINT("\"interrupts\":{")
+    PRINT("\"vector\":{")
     for (size_t i = 0; i < 256; ++i)
         if (ints.vector[i] != NO_INTERRUPT)
-            PRINT("%s\"%zu\":%d", comma++ ? "," : "", i, ints.vector[i]);
-    PRINT("},");
-    PRINT("\"queuedInterrupts\":[");
+            PRINT("%s\"%zu\":%d", comma++ ? "," : "", i, ints.vector[i])
+    PRINT("},")
+    PRINT("\"queuedInterrupts\":[")
     for (int i = 0; i < ints.queue_idx; ++i) {
         PRINT("{\"interrupt\":%d,\"xtValue\":%d}%s", 
-                ints.queue[i].interrupt, ints.queue[i].xt_value, (i != (ints.queue_idx - 1)) ? "," : "");
+                ints.queue[i].interrupt, ints.queue[i].xt_value, (i != (ints.queue_idx - 1)) ? "," : "")
     }
-    PRINT("],");
-    PRINT("\"active\":%s,", ints.active ? "true" : "false");
-    PRINT("\"happening\":%s,", ints.happening ? "true" : "false");
-    PRINT("\"returnAddress\":%d", ints.ret_addr);
-    PRINT("}");
+    PRINT("],")
+    PRINT("\"active\":%s,", ints.active ? "true" : "false")
+    PRINT("\"happening\":%s,", ints.happening ? "true" : "false")
+    PRINT("\"returnAddress\":%d", ints.ret_addr)
+    PRINT("}")
 
-    PRINT("}");
+    PRINT("}")
 #undef PRINT
     return n;
 }

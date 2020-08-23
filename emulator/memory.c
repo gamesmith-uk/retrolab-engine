@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../global.h"
-#include "mmap.h"
 #include "cpu.h"
 #include "video.h"
 
@@ -80,22 +78,22 @@ ram_dbg_json(size_t memory_block, char* buf, size_t bufsz)
 {
     int n = 0;
 #define PRINT(...) { n += snprintf(&buf[n], bufsz - n, __VA_ARGS__); }
-    PRINT("\"memory\":{\"data\":[");
+    PRINT("\"memory\":{\"data\":[")
     for (size_t i = 0; i < 0x100; ++i)
-        PRINT("%d%s", ram[(memory_block * 0x100) + i], (i != 0xff) ? "," : "");
-    PRINT("],");
-    PRINT("\"lastUpdated\":[");
+        PRINT("%d%s", ram[(memory_block * 0x100) + i], (i != 0xff) ? "," : "")
+    PRINT("],")
+    PRINT("\"lastUpdated\":[")
     if (last_updated.addr != NO_ADDRESS)
-        PRINT("%ld", last_updated.addr);
+        PRINT("%ld", last_updated.addr)
     if (last_updated.addr != NO_ADDRESS && last_updated.addr2 != NO_ADDRESS)
-        PRINT(",");
+        PRINT(",")
     if (last_updated.addr2 != NO_ADDRESS)
-        PRINT("%ld", last_updated.addr2);
-    PRINT("],");
-    PRINT("\"stack\":[");
+        PRINT("%ld", last_updated.addr2)
+    PRINT("],")
+    PRINT("\"stack\":[")
     for (size_t i = 0; i < 32; ++i)
-        PRINT("%d%s", ram[cpu_SP() + i + 1], (i != 31) ? "," : "");
-    PRINT("]}");
+        PRINT("%d%s", ram[cpu_SP() + i + 1], (i != 31) ? "," : "")
+    PRINT("]}")
 #undef PRINT
     return n;
 }

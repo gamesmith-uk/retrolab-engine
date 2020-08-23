@@ -84,12 +84,12 @@ bkps_dbg_json(char* buf, size_t bufsz)
 {
     int n = 0;
 #define PRINT(...) { n += snprintf(&buf[n], bufsz - n, __VA_ARGS__); }
-    PRINT("\"breakpoints\":[");
+    PRINT("\"breakpoints\":[")
     for (size_t i = 0; i < n_bkps; ++i)
-        PRINT("{\"filename\":\"%s\",\"line\":%zu},", bkps[i].filename, bkps[i].line);
+        PRINT("{\"filename\":\"%s\",\"line\":%zu},", bkps[i].filename, bkps[i].line)
     if (n_bkps > 0)
         --n;
-    PRINT("]");
+    PRINT("]")
 #undef PRINT
     return n;
 }

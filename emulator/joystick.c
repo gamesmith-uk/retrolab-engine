@@ -58,16 +58,16 @@ joystick_dbg_json(char* buf, size_t bufsz)
 {
     int n = 0;
 #define PRINT(...) { n += snprintf(&buf[n], bufsz - n, __VA_ARGS__); }
-    PRINT("\"joystick\":{");
-    PRINT("\"up\":%s,",    ram[JOYSTICK_STATE] & 1 ? "true" : "false");
-    PRINT("\"down\":%s,",  (ram[JOYSTICK_STATE] >> 1) & 1 ? "true" : "false");
-    PRINT("\"left\":%s,",  (ram[JOYSTICK_STATE] >> 2) & 1 ? "true" : "false");
-    PRINT("\"right\":%s,", (ram[JOYSTICK_STATE] >> 3) & 1 ? "true" : "false");
-    PRINT("\"z\":%s,",     (ram[JOYSTICK_STATE] >> 4) & 1 ? "true" : "false");
-    PRINT("\"x\":%s,",     (ram[JOYSTICK_STATE] >> 5) & 1 ? "true" : "false");
-    PRINT("\"a\":%s,",     (ram[JOYSTICK_STATE] >> 6) & 1 ? "true" : "false");
-    PRINT("\"s\":%s",      (ram[JOYSTICK_STATE] >> 7) & 1 ? "true" : "false");
-    PRINT("}");
+    PRINT("\"joystick\":{")
+    PRINT("\"up\":%s,",    ram[JOYSTICK_STATE] & 1 ? "true" : "false")
+    PRINT("\"down\":%s,",  (ram[JOYSTICK_STATE] >> 1) & 1 ? "true" : "false")
+    PRINT("\"left\":%s,",  (ram[JOYSTICK_STATE] >> 2) & 1 ? "true" : "false")
+    PRINT("\"right\":%s,", (ram[JOYSTICK_STATE] >> 3) & 1 ? "true" : "false")
+    PRINT("\"z\":%s,",     (ram[JOYSTICK_STATE] >> 4) & 1 ? "true" : "false")
+    PRINT("\"x\":%s,",     (ram[JOYSTICK_STATE] >> 5) & 1 ? "true" : "false")
+    PRINT("\"a\":%s,",     (ram[JOYSTICK_STATE] >> 6) & 1 ? "true" : "false")
+    PRINT("\"s\":%s",      (ram[JOYSTICK_STATE] >> 7) & 1 ? "true" : "false")
+    PRINT("}")
 #undef PRINT
     return n;
 }
