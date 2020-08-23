@@ -22,11 +22,16 @@ init(bool reset_memory)
     return 0;
 }
 
+static void
+run_emulator_frame() {
+    emulator_frame();
+}
+
 int EMSCRIPTEN_KEEPALIVE
 main_loop()
 {
     printf("Starting main loop in C side.\n");
-    emscripten_set_main_loop(emulator_frame, 0, 1);
+    emscripten_set_main_loop(run_emulator_frame, 0, 1);
     printf("Main loop set up.\n");
     return 0;
 }
