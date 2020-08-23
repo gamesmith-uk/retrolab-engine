@@ -16,6 +16,7 @@
 static reg_t reg[16] = { 0 };
 static bool skip_next = false;
 static bool debugging_mode = false;
+static CpuError _cpu_error = CPU_ERROR_NO_ERROR;
 
 static Interrupts ints = {
     .vector    = { NO_INTERRUPT },
@@ -618,10 +619,12 @@ cpu_execute_instruction(uint8_t op, const Parameter* par1, const Parameter* par2
         break;
 
     default:
+#if !TESTING
         fprintf(stderr, "Invalid CPU operation 0x%02X in PC 0x%X.\n", op, PC);
+#endif
         ++PC;
-        abort(); // TODO
-        return -ram[PC];  // invalid operation
+        _cpu_error = CPU_ERROR_INVALID_OPCODE;
+        return PC;
     }
     return PC;
 #undef SET_OP_NAME
@@ -648,6 +651,8 @@ static __attribute__((unused)) void cpu_print_debug(reg_t pc, char* op, Paramete
 int
 cpu_step()
 {
+    _cpu_error = CPU_ERROR_NO_ERROR;
+
     __attribute__((unused)) reg_t original_pc = PC;
 
     // set random
@@ -730,6 +735,12 @@ cpu_break_next()
 
 // {{{ debugging info
 
+CpuError
+cpu_error()
+{
+    return _cpu_error;
+}
+
 void
 cpu_set_debugging_mode(bool v)
 {
@@ -752,6 +763,14 @@ cpu_dbg_json(char* buf, size_t bufsz)
     PRINT("\"version\":[%d,%d],", ram[CPU_VERSION_MAJOR], ram[CPU_VERSION_MINOR])
     PRINT("\"random\":%d,", ram_get16(CPU_RANDOM))
     PRINT("\"pc\":%d,", cpu_PC())
+
+    // errors
+    switch (_cpu_error) { // NOLINT(hicpp-multiway-paths-covered)
+        case CPU_ERROR_NO_ERROR: break;
+        case CPU_ERROR_INVALID_OPCODE:
+        PRINT("\"error\":\"Invalid opcode 0x%02X in address 0x%04X.", ram[PC], PC)
+            break;
+    }
 
     // current source location
     if (dbg) {

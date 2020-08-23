@@ -1228,6 +1228,20 @@ static int execution()
 
 // }}}
 
+// {{{ error handling
+
+ASSERT_EXEC(invalid_opcode, "db 0xfe", cpu_error() == CPU_ERROR_INVALID_OPCODE);
+
+static int error_handling()
+{
+    printf("Error handling:\n");
+    verify(invalid_opcode);
+    printf("\n");
+    return 0;
+}
+
+// }}}
+
 // 
 // MAIN
 //
@@ -1258,7 +1272,8 @@ int main()
                  + external()
                  + emulator_debug()
                  + breakpoints()
-                 + execution();
+                 + execution()
+                 + error_handling();
     int result = compiler + emulator;
     if (result == 0)
         printf("All tests passed " BGRN ":)" RST "\n");

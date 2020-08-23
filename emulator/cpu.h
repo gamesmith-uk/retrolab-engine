@@ -11,6 +11,11 @@ typedef uint16_t reg_t;
 
 #define DEBUGGER_REQUESTED -0x100
 
+typedef enum {
+    CPU_ERROR_NO_ERROR,
+    CPU_ERROR_INVALID_OPCODE,
+} CpuError;
+
 void        cpu_init();
 void        cpu_destroy();
 
@@ -25,6 +30,7 @@ reg_t       cpu_register(uint8_t idx);
 void        cpu_set_debugging_mode(bool v);
 void        cpu_load_debugging_info(const DebuggingInfo* dbg);
 int         cpu_dbg_json(char* buf, size_t bufsz);
+CpuError    cpu_error();
 
 long        cpu_addr_from_source(const char* filename, size_t line);
 
