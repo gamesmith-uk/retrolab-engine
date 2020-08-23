@@ -12,8 +12,8 @@ typedef uint16_t reg_t;
 #define DEBUGGER_REQUESTED -0x100
 
 typedef enum {
-    CPU_ERROR_NO_ERROR,
-    CPU_ERROR_INVALID_OPCODE,
+    CPU_ERROR_NO_ERROR        = 0,
+    CPU_ERROR_INVALID_OPCODE  = 1,
 } CpuError;
 
 void        cpu_init();

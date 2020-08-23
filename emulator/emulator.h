@@ -4,11 +4,13 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "cpu.h"
+
 typedef void(*BreakpointListener)();
 
 void emulator_init(bool reset_memory);
-void emulator_step();
-void emulator_frame();
+CpuError emulator_step();
+CpuError emulator_frame();
 void emulator_destroy();
 
 void emulator_load_rom(const char* file);

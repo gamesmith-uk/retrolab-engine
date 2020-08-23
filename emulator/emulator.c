@@ -33,11 +33,11 @@ emulator_init(bool reset_memory)
 #endif
 }
 
-void
+CpuError
 emulator_step()
 {
     end_of_frame = false;
-    cpu_step();
+    CpuError err = cpu_step();
     --steps_left;
 
     // is it the end of frame?
@@ -53,7 +53,7 @@ emulator_step()
         if (breakpoint_hit_fptr && break_at_end_of_frame) {
             breakpoint_hit_fptr();
             break_at_end_of_frame = false;
-            return;
+            return err;
         }
     }    
     
@@ -62,18 +62,23 @@ emulator_step()
         breakpoint_hit_fptr();
         end_of_frame = true;
     }
+
+    return err;
 }
 
-void
+CpuError
 emulator_frame()
 {
     // size_t t = SDL_GetTicks();
     for (;;) {
-        emulator_step();
+        CpuError e = emulator_step();
+        if (e != CPU_ERROR_NO_ERROR)
+            return e;
         if (end_of_frame)
             break;
     }
     // printf("%zu\n", SDL_GetTicks() - t);
+    return CPU_ERROR_NO_ERROR;
 }
 
 void

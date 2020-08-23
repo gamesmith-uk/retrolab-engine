@@ -12,7 +12,7 @@
 
 #include "exec/exec.h"
 
-static void
+static int
 main_loop()
 {
 #if __EMSCRIPTEN__
@@ -20,12 +20,15 @@ main_loop()
 #else
     while (video_running()) {
         unsigned int current_time = SDL_GetTicks();
-        emulator_frame();
+        CpuError cpu_error = emulator_frame();
+        if (cpu_error != CPU_ERROR_NO_ERROR)
+            return cpu_error;
         unsigned int new_time = SDL_GetTicks();
         long idle_time = (16L - (new_time - current_time));
         if (idle_time > 0)
             SDL_Delay(idle_time);
     }
+    return 0;
 #endif
 }
 
@@ -102,10 +105,11 @@ parse_args(int argc, char* argv[])
 int
 main(int argc, char* argv[])
 {
+    int r = 0;
 #if !__EMSCRIPTEN__
     emulator_init(true);
     parse_args(argc, argv);
-    main_loop();
+    r = main_loop();
     video_destroy();
     emulator_destroy();
 #else
@@ -113,7 +117,7 @@ main(int argc, char* argv[])
     (void) argv;
     (void) main_loop;
 #endif
-    return 0;
+    return r;
 }
 
 // vim:st=4:sts=4:sw=4:expandtab

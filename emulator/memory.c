@@ -65,12 +65,13 @@ ram_set16(uint16_t addr, uint16_t data)
     last_updated.addr2 = addr + 1;
 }
 
-void
+int
 ram_load(uint16_t start, const uint8_t* data, size_t sz)
 {
     if (start + sz > 0xFFFF)
-        abort();
+        return -1;
     memcpy(&ram[start], data, sz);
+    return sz;
 }
 
 int

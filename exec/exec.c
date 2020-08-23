@@ -29,9 +29,14 @@ int exec_compile_file_to_ram(const char *filename)
         fprintf(stderr, "%s\n", error);
         return 1;
     }
-    ram_load(0, output_binary_data(output), output_binary_size(output));
-    output_free(output);
-    return 0;
+    if (ram_load(0, output_binary_data(output), output_binary_size(output)) < 0) {
+        fprintf(stderr, "Could not load memory data.\n");
+        output_free(output);
+        return 1;
+    } else {
+        output_free(output);
+        return 0;
+    }
 }
 
 static char* read_file_contents(const char* full_path) {
@@ -80,9 +85,14 @@ int exec_compile_dir_to_ram(const char* filename)
             fprintf(stderr, "%s\n", error);
             return 1;
         }
-        ram_load(0, output_binary_data(output), output_binary_size(output));
-        output_free(output);
+        if (ram_load(0, output_binary_data(output), output_binary_size(output)) < 0) {
+            fprintf(stderr, "Could not load memory data.\n");
+            output_free(output);
+            return 1;
+        } else {
+            output_free(output);
+            return 0;
+        }
     }
-    return 0;
 }
 

@@ -41,18 +41,16 @@ stop_main_loop()
     return 0;
 }
 
-int EMSCRIPTEN_KEEPALIVE
+CpuError EMSCRIPTEN_KEEPALIVE
 step()
 {
-    emulator_step();
-    return 0;
+    return emulator_step();
 }
 
-int EMSCRIPTEN_KEEPALIVE
+CpuError EMSCRIPTEN_KEEPALIVE
 frame()
 {
-    emulator_frame();
-    return 0;
+    return emulator_frame();
 }
 
 int EMSCRIPTEN_KEEPALIVE
@@ -83,18 +81,26 @@ int EMSCRIPTEN_KEEPALIVE
 load_memory(const uint8_t* data, size_t sz)
 {
     emulator_init(true);
-    ram_load(0, data, sz);
-    printf("%zu bytes of memory loaded.\n", sz);
-    return 0;
+    if (ram_load(0, data, sz) > 0) {
+        printf("%zu bytes of memory loaded.\n", sz);
+        return 0;
+    } else {
+        fprintf(stderr, "Could not load memory data.\n");
+        return -1;
+    }
 }
 
 int EMSCRIPTEN_KEEPALIVE
 load_output(Output* output)
 {
     emulator_init(true);
-    ram_load(0, output_binary_data(output), output_binary_size(output));
-    cpu_load_debugging_info(output_debugging_info(output));
-    return 0;
+    if (ram_load(0, output_binary_data(output), output_binary_size(output)) > 0) {
+        cpu_load_debugging_info(output_debugging_info(output));
+        return 0;
+    } else {
+        fprintf(stderr, "Could not load memory data.\n");
+        return -1;
+    }
 }
 
 // }}}
