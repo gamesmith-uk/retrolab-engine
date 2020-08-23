@@ -140,3 +140,8 @@ add_custom_target(wasm-release
         DEPENDS ${WASM_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/font.h ${CMAKE_CURRENT_BINARY_DIR}/mmap.h ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def.h
         COMMAND emcc -O3 ${WASM_OPTIONS} ${WASM_SOURCES}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+# new version
+add_custom_target(web-zip
+        DEPENDS wasm-release retrolab-def
+        COMMAND zip retrolab-wasm.zip retrolab-${CMAKE_PROJECT_VERSION}.js retrolab-${CMAKE_PROJECT_VERSION}.wasm retrolab-${CMAKE_PROJECT_VERSION}.def)

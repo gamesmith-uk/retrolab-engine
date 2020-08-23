@@ -39,9 +39,7 @@ jobs:
           cd emsdk
           source ./emsdk_env.sh
           cd ../build
-          make wasm-release
-          make retrolab-def
-          zip retrolab-wasm.zip retrolab-*.wasm retrolab-*.js retrolab-*.def
+          make web-zip
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

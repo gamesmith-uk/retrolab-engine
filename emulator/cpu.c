@@ -78,6 +78,7 @@ static void memory_manager(uint16_t command)
 void
 cpu_init()
 {
+    _cpu_error = CPU_ERROR_NO_ERROR;
     memset(reg, 0, sizeof(reg));  // reset registers
     cpu_set_hardware_fpointer(DEV_MEM_MGR, memory_manager);
     skip_next = false;
@@ -767,7 +768,7 @@ cpu_dbg_json(char* buf, size_t bufsz)
     switch (_cpu_error) { // NOLINT(hicpp-multiway-paths-covered)
         case CPU_ERROR_NO_ERROR: break;
         case CPU_ERROR_INVALID_OPCODE:
-        PRINT("\"error\":\"Invalid opcode 0x%02X in address 0x%04X.", ram[PC-1], PC-1)
+        PRINT("\"error\":\"Invalid opcode 0x%02X in address 0x%04X.\",", ram[PC-1], PC-1)
             break;
     }
 
