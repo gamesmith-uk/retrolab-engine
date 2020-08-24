@@ -7,6 +7,7 @@
 
 void video_init();
 void video_destroy();
+void video_reset();
 
 void video_tick();
 bool video_running();

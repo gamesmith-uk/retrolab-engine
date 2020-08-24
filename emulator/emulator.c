@@ -33,6 +33,14 @@ emulator_init(bool reset_memory)
 #endif
 }
 
+void
+emulator_reset()
+{
+    execution_suspended = false;
+    end_of_frame = false;
+    steps_left = STEPS_PER_FRAME;
+}
+
 CpuError
 emulator_step()
 {
@@ -104,17 +112,17 @@ emulator_load_rom(const char* filename)
 void
 emulator_hard_reset()
 {
-    emulator_destroy();
-    execution_suspended = false;
-    emulator_init(true);
+    ram_reset();
+    emulator_soft_reset();
 }
 
 void
 emulator_soft_reset()
 {
-    emulator_destroy();
-    execution_suspended = false;
-    emulator_init(false);
+    emulator_reset();
+    cpu_reset();
+    timer_reset();
+    video_reset();
 }
 
 void

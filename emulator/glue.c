@@ -46,6 +46,13 @@ stop_main_loop()
     return 0;
 }
 
+int EMSCRIPTEN_KEEPALIVE
+reset()
+{
+    emulator_hard_reset();
+    return 0;
+}
+
 CpuError EMSCRIPTEN_KEEPALIVE
 step()
 {

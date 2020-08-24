@@ -35,6 +35,8 @@ typedef struct CursorInfo {
     uint16_t pos;
 } CursorInfo;
 
+static void draw_frame();
+
 // {{{ initialization
 
 static void
@@ -50,8 +52,8 @@ load_font() {
     SDL_FreeSurface(sf);
 }
 
-static void
-video_init_data()
+void
+video_reset()
 {
 #define SET_COLOR(n, color) \
     ram[VIDEO_PALETTE + (n * 3)] = (color >> 16) & 0xff; \
@@ -79,6 +81,8 @@ video_init_data()
     // text color
     memset(&ram[VIDEO_TXT_COLOR], (COLOR_LIME << 4) | COLOR_BLACK, LINES * COLUMNS);
     ram[VIDEO_CURSOR_INFO] = (1 << 4) | COLOR_ORANGE;  // visible, whole, non-blinking, orange
+
+    draw_frame();
 }
 
 void
@@ -93,7 +97,7 @@ video_init()
         SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
     ren = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     load_font();
-    video_init_data();
+    video_reset();
     SDL_StartTextInput();
 }
 

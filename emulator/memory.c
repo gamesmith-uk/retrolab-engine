@@ -20,6 +20,12 @@ LastUpdated last_updated = { NO_ADDRESS, NO_ADDRESS };
 void
 ram_init()
 {
+    ram_reset();
+}
+
+void
+ram_reset()
+{
     memset(ram, 0, MEMSZ);
     last_updated = (LastUpdated) { NO_ADDRESS, NO_ADDRESS };
 }

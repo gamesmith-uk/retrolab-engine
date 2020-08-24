@@ -11,6 +11,11 @@
 
 void timer_init()
 {
+    timer_reset();
+}
+
+void timer_reset()
+{
     for (size_t i = 0; i < TIMERS; ++i) {
         ram[TIMER_FRAME_0] = 0x0;
         ram[TIMER_FRAME_0 + 1] = 0x0;

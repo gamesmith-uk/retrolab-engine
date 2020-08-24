@@ -18,6 +18,7 @@ typedef enum {
 
 void        cpu_init();
 void        cpu_destroy();
+void        cpu_reset();
 
 int         cpu_step();
 void        cpu_interrupt(uint8_t number, uint16_t xt_value);

@@ -78,6 +78,19 @@ static void memory_manager(uint16_t command)
 void
 cpu_init()
 {
+    cpu_reset();
+}
+
+void
+cpu_destroy()
+{
+    debug_free(dbg);
+    dbg = NULL;
+}
+
+void
+cpu_reset()
+{
     _cpu_error = CPU_ERROR_NO_ERROR;
     memset(reg, 0, sizeof(reg));  // reset registers
     cpu_set_hardware_fpointer(DEV_MEM_MGR, memory_manager);
@@ -92,13 +105,6 @@ cpu_init()
 
     SP = STACK_BOTTOM;
     PC = 0;
-}
-
-void
-cpu_destroy()
-{
-    debug_free(dbg);
-    dbg = NULL;
 }
 
 // }}}

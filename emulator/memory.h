@@ -7,6 +7,7 @@
 extern uint8_t ram[];
 
 void     ram_init();
+void     ram_reset();
 
 uint8_t  ram_get(uint16_t addr);
 uint16_t ram_get16(uint16_t addr);

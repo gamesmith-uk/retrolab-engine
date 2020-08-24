@@ -5,6 +5,7 @@
 
 void timer_init();
 void timer_frame_step();
+void timer_reset();
 
 int  timer_dbg_json(char* buf, size_t bufsz);
 
