@@ -741,7 +741,7 @@ cpu_break_next()
 bool
 cpu_next_is_subroutine()
 {
-    return false;
+    return ram[PC] == 0x61;
 }
 
 // }}}
