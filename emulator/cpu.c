@@ -738,6 +738,12 @@ cpu_break_next()
     break_next = true;
 }
 
+bool
+cpu_next_is_subroutine()
+{
+    return false;
+}
+
 // }}}
 
 // {{{ debugging info

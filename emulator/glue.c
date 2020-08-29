@@ -1,5 +1,6 @@
 #include "../global.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 
 #include "breakpoints.h"
@@ -170,6 +171,12 @@ break_next()
 {
     cpu_break_next();
     return 0;
+}
+
+bool EMSCRIPTEN_KEEPALIVE
+next_is_subroutine()
+{
+    return cpu_next_is_subroutine();
 }
 
 // }}}
