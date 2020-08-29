@@ -10,6 +10,8 @@
 #include "emulator/memory.h"
 #include "exec/exec.h"
 
+extern const char* retrolab_def;
+
 // {{{ test infrastructure
 
 // inspired by http://eradman.com/posts/tdd-in-c.html
@@ -1244,6 +1246,40 @@ static int error_handling()
 
 // }}}
 
+// {{{ real examples
+
+static int sample_a()
+{
+    Input* input = input_new();
+    input_add_file(input, "retrolab.def", retrolab_def);
+    input_add_file(input, "main.s", "start:\n\tjsr test\n\tjmp start");
+    input_add_file(input, "test.s", "test:\n\tinc a\n\tret");
+    Output* output = compile_input(input);
+    input_free(input);
+    const char* error = output_error_message(output);
+    _assert(error == NULL);
+    emulator_init(true);
+    ram_load(0x0, output_binary_data(output), output_binary_size(output));
+    output_free(output);
+    cpu_load_debugging_info(output_debugging_info(output));
+    for (size_t i = 0; i < 300; ++i) {
+        cpu_step();
+        _assert(cpu_error() == CPU_ERROR_NO_ERROR);
+    }
+    emulator_destroy();
+    return 0;
+}
+
+static int real_examples()
+{
+    printf("Real examples:\n");
+    verify(sample_a);
+    printf("\n");
+    return 0;
+}
+
+// }}}
+
 // 
 // MAIN
 //
@@ -1275,7 +1311,8 @@ int main()
                  + emulator_debug()
                  + breakpoints()
                  + execution()
-                 + error_handling();
+                 + error_handling()
+                 + real_examples();
     int result = compiler + emulator;
     if (result == 0)
         printf("All tests passed " BGRN ":)" RST "\n");
