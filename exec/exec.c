@@ -71,12 +71,15 @@ int exec_compile_dir_to_ram(const char* filename)
                 char full_path[plen + strlen(ep->d_name) + 2];
                 snprintf(full_path, sizeof full_path, "%s/%s", filename, ep->d_name);
                 char* contents = read_file_contents(full_path);
-                if (!contents)
+                if (!contents) {
+                    closedir(dp);
                     return 1;
+                }
                 input_add_file(input, full_path, contents);
                 free(contents);
             }
         }
+        closedir(dp);
 
         Output* output = compile_input(input);
         input_free(input);

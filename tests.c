@@ -22,6 +22,7 @@ static int tests_run = 0;
 
 #define FAIL() printf("  " BRED "\u2718 " RST "%s() : line %d\n", __func__, __LINE__)
 #define _assert(test) do { if (!(test)) { FAIL(); exit(1); } } while(0)
+// #define verify(...)
 #define verify(test) do { int r=test(); if (r == 0) printf("  " BGRN "\u2714" RST " %s()\n", #test); tests_run++; if(r) return r; } while(0)
 
 static void print_bytes(const uint8_t data[], size_t sz)
@@ -1181,6 +1182,7 @@ static int bkp_other_file()
     input_add_file(input, "main.s", "jmp test");
     input_add_file(input, "board.s", "\nnop");
     Output* output = compile_input(input);
+    input_free(input);
     size_t sz = output_binary_size(output);
     const uint8_t* data = output_binary_data(output);
     ram_load(0x0, data, sz);
