@@ -1,0 +1,8 @@
+{
+   Flex memory leak
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:yyensure_buffer_stack
+   ...
+}

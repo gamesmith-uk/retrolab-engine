@@ -15,10 +15,13 @@ static long        tmp_brk = -1;
 void
 bkps_clear()
 {
-    for (size_t i=0; i < n_bkps; ++i)
-        free(bkps[i].filename);
-    free(bkps);
+    if (bkps) {
+        for (size_t i=0; i < n_bkps; ++i)
+            free(bkps[i].filename);
+        free(bkps);
+    }
     n_bkps = 0;
+    bkps = NULL;
 }
 
 int

@@ -126,7 +126,7 @@ add_custom_target(test-video
 
 add_custom_target(test-leaks
         DEPENDS retrolab_test
-        COMMAND valgrind --leak-check=full --show-leak-kinds=all ${CMAKE_CURRENT_BINARY_DIR}/retrolab_test
+        COMMAND valgrind --leak-check=full --show-leak-kinds=all --suppressions=${CMAKE_CURRENT_SOURCE_DIR}/retrolab.supp ${CMAKE_CURRENT_BINARY_DIR}/retrolab_test
         USES_TERMINAL)
 
 # WASM
