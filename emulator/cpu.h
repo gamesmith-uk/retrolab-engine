@@ -24,6 +24,7 @@ int         cpu_step();
 void        cpu_interrupt(uint8_t number, uint16_t xt_value);
 void        cpu_set_hardware_fpointer(uint8_t hw, void(*fptr)(uint16_t data));
 bool        cpu_waiting_for_interrupt();
+bool        cpu_next_is_subroutine();
 
 const char* cpu_register_name(uint8_t idx);
 reg_t       cpu_register(uint8_t idx);

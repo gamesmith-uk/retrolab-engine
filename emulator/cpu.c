@@ -738,6 +738,12 @@ cpu_break_next()
     break_next = true;
 }
 
+bool
+cpu_next_is_subroutine()
+{
+    return ram[PC] == 0x61;
+}
+
 // }}}
 
 // {{{ debugging info
