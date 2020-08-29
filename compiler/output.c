@@ -31,6 +31,7 @@ void EMSCRIPTEN_KEEPALIVE
 output_free(Output* o)
 {
     debug_free(o->debugging_info);
+    o->debugging_info = NULL;
     free(o->binary);
     free(o->error.message);
     free(o->error.filename);

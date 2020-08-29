@@ -1260,8 +1260,8 @@ static int sample_a()
     _assert(error == NULL);
     emulator_init(true);
     ram_load(0x0, output_binary_data(output), output_binary_size(output));
-    output_free(output);
     cpu_load_debugging_info(output_debugging_info(output));
+    output_free(output);
     for (size_t i = 0; i < 300; ++i) {
         cpu_step();
         _assert(cpu_error() == CPU_ERROR_NO_ERROR);

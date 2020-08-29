@@ -50,11 +50,13 @@ symtbl_set_global(SymbolTable* tbl, const char* name)
 static void
 make_identifier_name(const SymbolTable* tbl, const char* name, char* new_name, size_t max_sz)
 {
-    if (name[0] != 0 && name[0] == '.' && tbl->global) {
-        snprintf(new_name, max_sz, "%s%s", tbl->global, name);
-    } else {
-        strncpy(new_name, name, max_sz - 1);
-        new_name[max_sz - 1] = '\0';
+    if (name[0] != 0) {
+        if (name[0] == '.' && tbl->global) {
+            snprintf(new_name, max_sz, "%s%s", tbl->global, name);
+        } else {
+            snprintf(new_name, max_sz, "%s", name);
+            new_name[max_sz - 1] = '\0';
+        }
     }
 }
 
