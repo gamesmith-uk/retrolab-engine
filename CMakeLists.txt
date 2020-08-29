@@ -129,6 +129,11 @@ add_custom_target(test-leaks
         COMMAND valgrind --leak-check=full --show-leak-kinds=all --suppressions=${CMAKE_CURRENT_SOURCE_DIR}/retrolab.supp ${CMAKE_CURRENT_BINARY_DIR}/retrolab_test
         USES_TERMINAL)
 
+# test sanitizer
+add_executable(retrolab_test_sanitize tests.c exec/exec.c ${SOURCES} ${HEADERS})
+target_compile_options(retrolab_test_sanitize PRIVATE -Wall -Wextra -DHEADLESS -DTESTING -O0 -ggdb -fsanitize=address -fno-omit-frame-pointer)
+target_link_libraries(retrolab_test_sanitize -lasan ${SDL2_LIBRARIES})
+
 # WASM
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(WASM_SOURCES ${SOURCES} emulator/glue.c)
@@ -136,12 +141,23 @@ set(WASM_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/retrolab-${CMAKE_PROJECT_VERSION})
 set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES ${WASM_OUTPUT}.js)
 set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES ${WASM_OUTPUT}.wasm)
 set(WASM_OPTIONS -o ${WASM_OUTPUT}.js -Wall -Wextra -s WASM=1 -s USE_SDL=2 -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\",\"print\",\"printErr\",\"addFunction\",\"free\"]' -s EXPORTED_FUNCTIONS='[\"_free\",\"_malloc\"]' -s NO_EXIT_RUNTIME=1 -s RESERVED_FUNCTION_POINTERS=10 -I${CMAKE_CURRENT_BINARY_DIR} -Icompiler -Iemulator -DVERSION=\\"${CMAKE_PROJECT_VERSION}\\")
+set(WASM_RELEASE -O3)
+set(WASM_DEBUG -O0 -g4 --source-map-base 'http://localhost:8080/' -fno-omit-frame-pointer)
+set(WASM_SANITIZER -fsanitize=address -s ALLOW_MEMORY_GROWTH)
+set(WASM_DEPENDENCIES ${WASM_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/font.h ${CMAKE_CURRENT_BINARY_DIR}/mmap.h ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def.h)
+add_custom_target(wasm-debug
+        DEPENDS ${WASM_DEPENDENCIES}
+        COMMAND emcc ${WASM_OPTIONS} ${WASM_DEBUG} ${WASM_SOURCES} ${WASM_SANITIZER}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 add_custom_target(wasm-release
-        DEPENDS ${WASM_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/font.h ${CMAKE_CURRENT_BINARY_DIR}/mmap.h ${CMAKE_CURRENT_BINARY_DIR}/retrolab.def.h
-        COMMAND emcc -O3 ${WASM_OPTIONS} ${WASM_SOURCES}
+        DEPENDS ${WASM_DEPENDENCIES}
+        COMMAND emcc ${WASM_OPTIONS} ${WASM_RELEASE} ${WASM_SOURCES}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 # new version
-add_custom_target(web-zip
+add_custom_target(web-zip-debug
+        DEPENDS wasm-debug retrolab-def
+        COMMAND zip retrolab-wasm.zip retrolab-${CMAKE_PROJECT_VERSION}.js retrolab-${CMAKE_PROJECT_VERSION}.wasm retrolab-${CMAKE_PROJECT_VERSION}.wasm.map retrolab-${CMAKE_PROJECT_VERSION}.def)
+add_custom_target(web-zip-release
         DEPENDS wasm-release retrolab-def
         COMMAND zip retrolab-wasm.zip retrolab-${CMAKE_PROJECT_VERSION}.js retrolab-${CMAKE_PROJECT_VERSION}.wasm retrolab-${CMAKE_PROJECT_VERSION}.def)

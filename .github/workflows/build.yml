@@ -39,7 +39,7 @@ jobs:
           cd emsdk
           source ./emsdk_env.sh
           cd ../build
-          make web-zip
+          make web-zip-release
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
