@@ -55,6 +55,7 @@ cc_free(CompilationContext* cc)
     free(cc->pending.data);
     symtbl_free(cc->symtbl);
     debug_free(cc->debugging_info);
+    cc->debugging_info = NULL;
     free(cc);
 }
 
