@@ -157,7 +157,7 @@ add_custom_target(wasm-release
 # new version
 add_custom_target(web-zip-debug
         DEPENDS wasm-debug retrolab-def
-        COMMAND rm retrolab-wasm.zip && zip retrolab-wasm.zip retrolab-${CMAKE_PROJECT_VERSION}.js retrolab-${CMAKE_PROJECT_VERSION}.wasm retrolab-${CMAKE_PROJECT_VERSION}.wasm.map retrolab-${CMAKE_PROJECT_VERSION}.def)
+        COMMAND rm -f retrolab-wasm.zip && zip retrolab-wasm.zip retrolab-${CMAKE_PROJECT_VERSION}.js retrolab-${CMAKE_PROJECT_VERSION}.wasm retrolab-${CMAKE_PROJECT_VERSION}.wasm.map retrolab-${CMAKE_PROJECT_VERSION}.def)
 add_custom_target(web-zip-release
         DEPENDS wasm-release retrolab-def
-        COMMAND rm retrolab-wasm.zip && zip retrolab-wasm.zip retrolab-${CMAKE_PROJECT_VERSION}.js retrolab-${CMAKE_PROJECT_VERSION}.wasm retrolab-${CMAKE_PROJECT_VERSION}.def)
+        COMMAND rm -f retrolab-wasm.zip && zip retrolab-wasm.zip retrolab-${CMAKE_PROJECT_VERSION}.js retrolab-${CMAKE_PROJECT_VERSION}.wasm retrolab-${CMAKE_PROJECT_VERSION}.def)
