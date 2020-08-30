@@ -23,20 +23,6 @@ init(bool reset_memory)
     return 0;
 }
 
-static void
-run_emulator_frame() {
-    emulator_frame();
-}
-
-int EMSCRIPTEN_KEEPALIVE
-main_loop()
-{
-    printf("Starting main loop in C side.\n");
-    emscripten_set_main_loop(run_emulator_frame, 0, 1);
-    printf("Main loop set up.\n");
-    return 0;
-}
-
 int EMSCRIPTEN_KEEPALIVE
 stop_main_loop()
 {
@@ -44,6 +30,24 @@ stop_main_loop()
     emscripten_cancel_main_loop();
     printf("Main loop cancelled.\n");
     // emscripten_exit_with_live_runtime();
+    return 0;
+}
+
+static void
+run_emulator_frame(void* error_callback) {
+    if (emulator_frame() != CPU_ERROR_NO_ERROR) {
+        printf("An error happened during execution. The main loop will be now canceled.\n");
+        stop_main_loop();
+        ((void(*)()) error_callback)();
+    }
+}
+
+int EMSCRIPTEN_KEEPALIVE
+main_loop(void (*error_callback)())
+{
+    printf("Starting main loop in C side.\n");
+    emscripten_set_main_loop_arg(run_emulator_frame, error_callback, 0, 1);
+    printf("Main loop set up.\n");
     return 0;
 }
 
