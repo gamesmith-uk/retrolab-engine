@@ -181,8 +181,8 @@ draw_background()
         SDL_Color bg = palette_color(ram[VIDEO_TXT_COLOR + i] & 0xf);
         SDL_SetRenderDrawColor(ren, bg.r, bg.g, bg.b, bg.a);
         SDL_Rect r = { 
-            .x = (int) ((BORDER * 2) + (i % CHAR_W)),
-            .y = (int) ((BORDER * 2) + (i / CHAR_W)),
+            .x = (int) (i % COLUMNS) * CHAR_W + (BORDER * 2),
+            .y = (int) (i / COLUMNS) * CHAR_H + (BORDER * 2),
             .w = CHAR_W,
             .h = CHAR_H
         };
